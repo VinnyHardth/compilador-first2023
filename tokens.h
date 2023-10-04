@@ -8,6 +8,12 @@
  * Assim, nao conflitam entre si e com os tokens representados pelo proprio
  * valor ascii de caracteres isolados.
  */
+typedef struct Token T_token;
+
+void grava_token(T_token *tk, int linha_atual);
+void set_token(T_token *tk, int tag, double value, char *name);
+T_token *cria_token(void);
+
 
 #define KW_CHAR           256
 #define KW_INT            257
