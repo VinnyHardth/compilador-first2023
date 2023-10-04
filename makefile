@@ -8,7 +8,7 @@
 #
 
 etapa1: lex.yy.c
-	gcc -o etapa1 lex.yy.c -lfl
+	gcc -o etapa1 lex.yy.c tokens.c -lfl
 lex.yy.c: scanner.l
 	flex scanner.l
 

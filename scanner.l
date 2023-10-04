@@ -7,14 +7,17 @@
 #include"hash.h"
 #include"tokens.h"
 
+
+// declaração de funções auxiliares para o analisador léxico
 int getLineNumber(void);
 int isRunning(void);
 void setIsRunning(int value);
 void ignorarComentarioMultiLinha(void);
-void grava_token(int token);
 
+
+// Variáveis globais para o analisador léxico
 int linha_atual = 1;
-bool programaEmExecucao = true; // Variável global para controlar o estado de execução
+bool programaEmExecucao = true; // controle do estado de execução
 
 %}
 
@@ -103,179 +106,9 @@ void ignorarComentarioMultiLinha(void) {
     }
 }
 
-void grava_token (int token) {
-    // Imprime as informações do token no console
-    printf("Token: ");
-    
-    switch (token) {
-    case 33:
-        printf("OP_NEG (!)\n");
-        break;
-
-    case 37:
-        printf("OP_MOD (%%)\n");
-        break;
-
-    case 38:
-        printf("OP_AND (&)\n");
-        break;
-
-    case 40:
-        printf("SG_ABREPAR (()\n");
-        break;
-
-    case 41:
-        printf("SG_FECHAPAR ())\n");
-        break;
-
-    case 42:
-        printf("OP_MULT (*)\n");
-        break;
-
-    case 43:
-        printf("OP_SOMA (+)\n");
-        break;
-
-    case 44:
-        printf("SG_COMMA (,)\n");
-        break;
-
-    case 45:
-        printf("OP_SUB (-)\n");
-        break;
-
-    case 47:
-        printf("OP_DIV (/)\n");
-        break;
-
-    case 59:
-        printf("SG_SEMICOLON (;)\n");
-        break;
-
-    case 60:
-        printf("OP_MENOR (<)\n");
-        break;
-
-    case 61:
-        printf("OP_ATRIB (=)\n");
-        break;
-
-    case 62:
-        printf("OP_MAIOR (>)\n");
-        break;
-
-    case 91:
-        printf("SG_ABRECOL ([)\n");
-        break;
-
-    case 93:
-        printf("SG_FECHACOL (])\n");
-        break;
-
-    case 123:
-        printf("SG_ABRECHV ({)\n");
-        break;
-
-    case 124:
-        printf("OP_OR (|)\n");
-        break;
-
-    case 125:
-        printf("SG_FECHACHV (})\n");
-        break;
-
-    case 126:
-        printf("OP_NOT (~)\n");
-        break;
-
-    case KW_CHAR:
-        printf("KW_CHAR (char)\n");
-        break;
-
-    case KW_INT:
-        printf("KW_INT (int)\n");
-        break;
-
-    case KW_REAL:
-        printf("KW_REAL (real)\n");
-        break;
-
-    case KW_BOOL:
-        printf("KW_BOOL (bool)\n");
-        break;
-
-    case KW_IF:
-        printf("KW_IF (if)\n");
-        break;
-
-    case KW_THEN:
-        printf("KW_THEN (then)\n");
-        break;
-
-    case KW_ELSE:
-        printf("KW_ELSE (else)\n");
-        break;
-
-    case KW_LOOP:
-        printf("KW_LOOP (loop)\n");
-        break;
-
-    case KW_INPUT:
-        printf("KW_INPUT (input)\n");
-        break;
-
-    case KW_OUTPUT:
-        printf("KW_OUTPUT (output)\n");
-        break;
-
-    case KW_RETURN:
-        printf("KW_RETURN (return)\n");
-        break;
-
-    case OPERATOR_LE:
-        printf("OP_LE (<=)\n");
-        break;
-
-    case OPERATOR_GE:
-        printf("OP_GE (>=)\n");
-        break;
-
-    case OPERATOR_EQ:
-        printf("OP_EQ (==)\n");
-        break;
-
-    case OPERATOR_DIF:
-        printf("OP_DIF (!=)\n");
-        break;
-
-    case TK_IDENTIFIER:
-        printf("TK_IDENTIFIER \n");
-        break;
-
-    case LIT_INT:
-        printf("LIT_INT \n");
-        break;
-
-    case LIT_REAL:
-        printf("LIT_REAL \n");
-        break;
-
-    case LIT_CHAR:
-        printf("LIT_CHAR \n");
-        break;
-
-    case LIT_STRING:
-        printf("LIT_STRING \n");
-        break;
-
-    default:
-        printf("TOKEN DESCONHECIDO\n");
-        break;
-    }
-}
-
 int main(int argc, char **argv) {
     yyin = fopen(argv[1], "r");
+    int aux = linha_atual;
 
     if (yyin == NULL) {
         printf("Erro ao abrir o arquivo.\n");
@@ -283,18 +116,48 @@ int main(int argc, char **argv) {
     }
 
     while (isRunning()) {
-        int token = yylex();
+        int tag = yylex();
 
-        if (token == 0) {
+        if (tag == TOKEN_ERROR) {
+            printf("Erro na linha %d: %s\n", getLineNumber(), yytext);
             setIsRunning(0);
-        } else if (token == TOKEN_ERROR) {
-            printf("Erro na linha %d\n", getLineNumber());
+        } else if (tag == 0) {
+            setIsRunning(0);
         } else {
-            grava_token(token);
+            T_token *t = cria_token();
+
+            switch (tag){
+                case LIT_REAL: 
+                    set_token(t, tag, strtod(yytext, NULL), NULL);
+                    break;
+                case LIT_INT:
+                    set_token(t, tag, atoi(yytext), NULL);
+                    break;
+                case LIT_STRING:
+                    set_token(t, tag, 0, yytext);
+                    break;
+                case LIT_CHAR:
+                    set_token(t, tag, 0, yytext);
+                    break;
+                case TK_IDENTIFIER:
+                    set_token(t, tag, 0, yytext);
+                    break;
+                default:
+                    set_token(t, tag, 0, NULL);
+                    break;
+            }
+
+
+            if (linha_atual != aux) {
+                printf("----> Linha %d: \n", linha_atual);
+                aux = linha_atual;
+            }
+            grava_token(t, getLineNumber());
+            
         }
     }
 
-    printf("Número de linhas: %d\n", getLineNumber());
+    //printf("Número de linhas: %d\n", getLineNumber());
 
 
     return 0;
