@@ -4,7 +4,6 @@
 #include<string.h>
 #include<ctype.h>
 #include<stdbool.h>
-#include"hash.h"
 #include"tokens.h"
 
 
