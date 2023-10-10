@@ -10,7 +10,7 @@ José Mateus Córdova Rodrigues - 22052567
 #include<ctype.h>
 #include<stdbool.h>
 
-int i = 0; // variável global para percorrer a linha
+int linha_atual = 0; // variável global para percorrer a linha
 FILE *docLex;
 FILE *file;
 char linha[2000];//buffer arbitrário
@@ -141,12 +141,12 @@ char prox_char(){
     if(strlen(linha) == 0){
         fgets(linha, 2000, file);
     }
-    char c = linha[i];
+    char c = linha[linha_atual];
     if(c != '\0'){ 
-        i++;
+        linha_atual++;
     }
     else{
-        i = 0;
+        linha_atual = 0;
         strcpy(linha, "");
     }
     return c;
@@ -276,7 +276,7 @@ bool analex(char *token, char *lexema, hash_table *table){ //classificador de to
                 if(strcmp(token, "ID") == 0){
                     insert_hash(table, lexema, &count_id);
                 }
-                i--;
+                linha_atual--;
                 return true;
                 break;
             case 3:
@@ -292,7 +292,7 @@ bool analex(char *token, char *lexema, hash_table *table){ //classificador de to
                 break;
             case 4: //Estado Final de NUM_INT
                 strcpy(token, "NUM_INT");
-                i--;
+                linha_atual--;
                 return true;
                 break;
             case 5:
@@ -314,7 +314,7 @@ bool analex(char *token, char *lexema, hash_table *table){ //classificador de to
                 break;
             case 7: //Estado Final de NUM_REAL
                 strcpy(token,"NUM_REAL");
-                i--;
+                linha_atual--;
                 return true;
                 break;
             case 8:
@@ -329,7 +329,7 @@ bool analex(char *token, char *lexema, hash_table *table){ //classificador de to
                 break;
             case 9: //Estado Final de String
                 strcpy(token,"STRING");
-                i--;
+                linha_atual--;
                 return true;
                 break;
             case 10:
@@ -360,7 +360,7 @@ bool analex(char *token, char *lexema, hash_table *table){ //classificador de to
                 break;
             case 12: //Estado Final de CHAR
                 strcpy(token,"CHAR");
-                i--;
+                linha_atual--;
                 return true;
                 break;
             case 13:
@@ -392,7 +392,7 @@ bool analex(char *token, char *lexema, hash_table *table){ //classificador de to
                 }
             case 18: //Estado Final de OP_DIV
                 strcpy(token,"OP_DIV");
-                i--;
+                linha_atual--;
                 return true;
                 break;
             case 19: //Estado Final de OP_DIV_REC
@@ -412,7 +412,7 @@ bool analex(char *token, char *lexema, hash_table *table){ //classificador de to
                 break;
             case 22: ////Estado Final de OP_SOMA
                 strcpy(token,"OP_SOMA"); 
-                i--;
+                linha_atual--;
                 return true;
                 break;
             case 23: //Estado Final de OP_SOMA_REC
@@ -429,7 +429,7 @@ bool analex(char *token, char *lexema, hash_table *table){ //classificador de to
                 break;
             case 25: //Estado Final de OP_SUB
                 strcpy(token,"OP_SUB"); 
-                i--;
+                linha_atual--;
                 return true;
                 break;
             case 26: //Estado Final de OP_DEC
@@ -458,7 +458,7 @@ bool analex(char *token, char *lexema, hash_table *table){ //classificador de to
                 break;
             case 31: //Estado Final de OP_MULT
                 strcpy(token,"OP_MULT"); 
-                i--;
+                linha_atual--;
                 return true;
                 break;
             case 32:
@@ -467,7 +467,7 @@ bool analex(char *token, char *lexema, hash_table *table){ //classificador de to
                 break;
             case 33: //Estado Final de OP_RESTO
                 strcpy(token,"OP_RESTO"); 
-                i--;
+                linha_atual--;
                 return true;
                 break;
             case 34: //Estado Final de OP_RESTO_REC
@@ -486,7 +486,7 @@ bool analex(char *token, char *lexema, hash_table *table){ //classificador de to
                 break;
             case 37: //Estado Final de OP_ATRIB
                 strcpy(token,"OP_ATRIB");
-                i--;
+                linha_atual--;
                 return true;
                 break;
             case 38:
@@ -500,7 +500,7 @@ bool analex(char *token, char *lexema, hash_table *table){ //classificador de to
                 break;
             case 40: //Estado Final de OP_NOT
                 strcpy(token,"OP_NOT"); 
-                i--;
+                linha_atual--;
                 return true;
                 break;
             case 41:
@@ -514,7 +514,7 @@ bool analex(char *token, char *lexema, hash_table *table){ //classificador de to
                 break;
             case 43: //Estado Final de MAIOR
                 strcpy(token,"MAIOR");
-                i--;
+                linha_atual--;
                 return true;
                 break;
             case 44:
@@ -523,7 +523,7 @@ bool analex(char *token, char *lexema, hash_table *table){ //classificador de to
                 break;
             case 45: //Estado Final de MENOR
                 strcpy(token,"MENOR");
-                i--;
+                linha_atual--;
                 return true;
                 break;
             case 46: //Estado Final de MENOR_IGUAL
@@ -555,62 +555,62 @@ bool analex(char *token, char *lexema, hash_table *table){ //classificador de to
                 break;
             case 51://Estado Final de ENDERECO
                 strcpy(token,"ENDERECO");
-                i--;
+                linha_atual--;
                 return true;
                 break;
             case 52: //Estado Final de VIRG
                 strcpy(token,"VIRG");
-                i--;
+                linha_atual--;
                 return true;
                 break;
             case 53: //Estado Final de PV
                 strcpy(token,"PV");
-                i--;
+                linha_atual--;
                 return true;
                 break;
             case 54: //Estado Final de PONTO
                 strcpy(token,"PONTO");
-                i--;
+                linha_atual--;
                 return true;
                 break;
             case 55: //Estado Final de ABRE_PAREN
                 strcpy(token,"ABRE_PAREN");
-                i--;
+                linha_atual--;
                 return true;
                 break;
             case 56: //Estado Final de FECHA_PAREN
                 strcpy(token,"FECHA_PAREN");
-                i--;
+                linha_atual--;
                 return true;
                 break;
             case 57: //Estado Final de FECHA_COLC
                 strcpy(token,"FECHA_COLC"); 
-                i--;
+                linha_atual--;
                 return true;
                 break;
             case 58: //Estado Final de ABRE_COLC
                 strcpy(token,"ABRE_COLC");
-                i--;
+                linha_atual--;
                 return true;
                 break;
             case 59: //Estado Final de ABRE_CHAV
                 strcpy(token,"ABRE_CHAV");
-                i--;
+                linha_atual--;
                 return true;
                 break;
             case 60: //Estado Final de FECHA_CHAV
                 strcpy(token,"FECHA_CHAV");
-                i--;
+                linha_atual--;
                 return true;
                 break;
             case 61: //Estado Final de OP_DOIS_PONTOS
                 strcpy(token,"OP_DOIS_PONTOS");
-                i--;
+                linha_atual--;
                 return true;
                 break;
             case 62: //Estado Final de OP_SELEC
                 strcpy(token,"OP_SELEC");
-                i--;
+                linha_atual--;
                 return true;
                 break;
             case 99: //fim do arquivo
