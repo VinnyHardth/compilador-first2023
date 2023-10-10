@@ -20,12 +20,12 @@ void grava_tabela(hash_table *table){
         return;
     }
 
-    fprintf(arq, "IDENTIFICADOR\tLEXEMA\n");
+    fprintf(arq, "IDENTIFICADOR\t|\tLEXEMA\n\n");
 
     for (int i = 0; i < table->size; i++) {
         hash_item *aux = table->items[i];
         while (aux) {
-            fprintf(arq, "%s\t\t\t\t%s\n", aux->id, aux->lexema);
+            fprintf(arq, "%s\t\t\t\t\t%s\n", aux->id, aux->lexema);
             aux = aux->prox;
         }
     }
@@ -57,12 +57,20 @@ void gravar_token(char *token, char *lexema) {
 
 char prox_char() {
     if (strlen(linha) == 0) {
-        fgets(linha, sizeof(linha), file);
+        if (fgets(linha, sizeof(linha), file) == NULL) {
+            return '\0'; // Retorna nulo se chegou ao final do arquivo
+        }
     }
 
     char c = linha[linha_atual];
     if (c != '\0') {
         linha_atual++;
+    } else if (linha[linha_atual - 1] == '\n') {
+        // Se o caractere atual é '\0' e o caractere anterior era '\n',
+        // isso significa que estamos no final da linha, então avance para a próxima linha.
+        strcpy(linha, ""); // Limpa a linha atual
+        linha_atual = 0;   // Reinicia o índice da linha
+        c = prox_char();    // Chama recursivamente para obter o próximo caractere da próxima linha
     } else {
         linha_atual = 0;
         strcpy(linha, "");
@@ -70,6 +78,8 @@ char prox_char() {
 
     return c;
 }
+
+
 
 
 void salvaLexema(int *j, char *lexema, char *c) {
@@ -612,12 +622,9 @@ bool analex(char *token, char *lexema, hash_table *table) {
 
 
 int main(int argc, char *argv[]) {
-    if (argc < 2) {
-        printf("Erro: Informe o nome do arquivo de entrada como argumento.\n");
-        return 1;
-    }
 
-    file = fopen(argv[1], "r"); // Abertura do arquivo de entrada
+
+    file = fopen("code.txt", "r"); // Abertura do arquivo de entrada
     if (file == NULL) {
         printf("Erro ao abrir o arquivo de entrada.\n");
         return 1;
