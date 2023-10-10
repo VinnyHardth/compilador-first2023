@@ -1,8 +1,3 @@
-/* 
-Giovanna Andrade Santos - 22052563
-José Mateus Córdova Rodrigues - 22052567
-*/
-
 #define _GNU_SOURCE // necessário porque getline() é extensão GNU
 #include<stdio.h>
 #include<string.h>
