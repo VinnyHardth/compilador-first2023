@@ -15,7 +15,6 @@ real media (real nota1, real nota2, real nota3){
 
 int main(){
     real nota1; real nota2; real nota3; real mediaAluno;
-
     nota1 = 7;
     nota2 = 8;
     nota3 = 9;

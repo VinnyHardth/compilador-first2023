@@ -72,6 +72,14 @@ PV ;
 REAL real
 ID mediaAluno
 PV ;
+CHAR_t char
+ID a
+ABRE_COLC [
+NUM_INT 10
+FECHA_COLC ]
+OP_ATRIB =
+STRING "socorro"
+PV ;
 ID nota1
 OP_ATRIB =
 NUM_INT 7
