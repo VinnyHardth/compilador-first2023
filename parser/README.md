@@ -1,42 +1,33 @@
-# C-- Compiler Repository
+# Repositório do Compilador First2023
 
-This is a project for the compiler course. The project involves the implementation of a compiler for the C-- language, which obeys the following grammar:
+Este é um projeto para o curso de compiladores. O projeto envolve a implementação de um compilador para a linguagem First2023, que segue a seguinte gramática:
 
-- Letters: ab ... zAB ... Z
-- Digits: 0123456789
-- Special Symbols: , ; ( ) = < > + - \* / % [ ] “ ‘ \_ $ { } ? : ! . etc
-- Separators: space, enter, tab
+- Letras: ab ... zAB ... Z
+- Dígitos: 0123456789
+- Símbolos Especiais: , ; ( ) = < > + - \* / % [ ] “ ‘ \_ $ { } ? : ! . etc
+- Separadores: espaço, quebra de linha, tabulação
 
-The project generates corresponding tokens from the C-- source code.
+O projeto gera tokens correspondentes a partir do código-fonte em First2023.
 
-## Lexical Directory
+## Diretório de Análise Sintática
 
-In the `lexical` directory, you will find the following files:
+No diretório `parser`, você encontrará os seguintes arquivos:
 
-1. `analisadorLexico.c`: This is the C source code for the lexical analyzer. It reads input from a text file, identifies the tokens, and classifies them according to the symbol table.
+1. `analisadorLexico.c`: Este é o código-fonte em C para o analisador léxico. Ele lê a entrada de um arquivo de texto, identifica os tokens e os classifica de acordo com a tabela de símbolos. Ele também gera um arquivo de saída com os tokens classificados, que é usado pelo analisador de sintaxe.
 
-2. `docLex.txt`: This file is one of the outputs of the lexical analyzer, containing a list of tokens and their respective lexemes.
+2. `code.txt`: Este arquivo de texto contém exemplos de código em First2023 para testar o analisador de sintaxe (parser).
 
-3. `Tabela_de_simbolos.txt`: This text file contains the symbol table that the lexical analyzer uses to classify the tokens.
+3. `parser.y`: Este é o arquivo de definição de gramática para o analisador de sintaxe (parser). Ele é usado para definir as regras de gramática da linguagem First2023.
 
-4. `teste.txt`: This text file contains examples of C-- code to test the lexical analyzer.
+4. `script.sh`: Este é um script shell para automatizar a execução do analisador léxico e do analisador de sintaxe.
 
-## Parser Directory
+## Como Executar
 
-In the `parser` directory, you will find the following files:
+Para executar o analisador de sintaxe, basta rodar o código `sh script.sh`.
 
-1. `analisadorLexico.c`: This is the C source code for the lexical analyzer, which is also used in the parsing phase.
+## Contato
 
-2. `code.txt`: This text file contains examples of C-- code to test the syntax analyzer (parser).
+Para perguntas ou comentários, sinta-se à vontade para enviar um e-mail para:
 
-3. `parser.y`: This is the grammar definition file for the syntax analyzer (parser). It is used to define the grammar rules of the C-- language.
-
-4. `script.sh`: This is a shell script to automate the execution of the lexical analyzer and syntax analyzer.
-
-## How to Execute
-
-To execute the parser, simply run the `sh script.sh` code
-
-## Contact
-
-For any questions or comments, feel free to send an email to jose.cordova@icomp.ufam.edu.br.
+- [vinicius.fonseca@icomp.ufam.edu.br]
+- [matheus.silva@icomp.ufam.edu.br]
