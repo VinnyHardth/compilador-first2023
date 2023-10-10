@@ -1,7 +1,10 @@
 IDENTIFICADOR	LEXEMA
-id3				dobra_valor
-id0				x
-id1				y
-id5				z
-id2				func
-id4				main
+id0				situacao
+id1				nota
+id7				mediaAluno
+id2				media
+id3				nota1
+id4				nota2
+id5				nota3
+id6				main
+id8				situacaoAluno

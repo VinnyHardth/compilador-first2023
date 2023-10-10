@@ -1,8 +1,4 @@
 %{
-/* 
-Giovanna Andrade Santos - 22052563
-José Mateus Córdova Rodrigues - 22052567
-*/
 #include <iostream>
 #include <cctype>
 using namespace std;
@@ -38,7 +34,7 @@ void yyerror(const char *);
 
 %token <str> VOID 
 %token <str> INT
-%token <str> FLOAT
+%token <str> REAL
 %token <str> CHAR_t 
 %token <str> BOOL
 %token <str> IF
@@ -114,7 +110,7 @@ decl-var: espec-tipo var PV //4
 
 espec-tipo: INT //5
 		 | VOID
-		 |FLOAT
+		 |REAL
 		 ;
 
 decl-func: espec-tipo ID ABRE_PAREN params FECHA_PAREN com-comp //6
@@ -266,7 +262,7 @@ int yylex() {
 
 	if(strcmp(token, "VOID") == 0){return VOID;}
 	else if(strcmp(token, "INT") == 0){return INT;}
-	else if(strcmp(token, "FLOAT")== 0){return FLOAT;}
+	else if(strcmp(token, "REAL")== 0){return REAL;}
 	else if(strcmp(token, "CHAR_t") == 0){return CHAR_t;}
 	else if(strcmp(token, "BOOL") == 0){return BOOL;}
 	else if(strcmp(token, "IF") == 0){return IF;}

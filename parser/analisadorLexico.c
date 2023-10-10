@@ -135,8 +135,8 @@ char* palavraReservada(char *lexema){
     else if(strcmp("int", lexema) == 0){
         return "INT";
     }
-    else if(strcmp("float", lexema) == 0){
-        return "FLOAT";
+    else if(strcmp("real", lexema) == 0){
+        return "REAL";
     }
     else if(strcmp("char", lexema) == 0){
         return "CHAR_t";

@@ -1,35 +1,27 @@
-int x;
-int y[5];
-
-int func(int x){
-    x = x+2;
-    return x;
+int situacao (real nota){
+    if (nota >= 7){
+        return 1;
+    }
+    else{
+        return 0;
+    }
 }
 
-int dobra_valor( int x ){
-    x = x * 2;
+real media (real nota1, real nota2, real nota3){
+    real media;
+    media = (nota1 + nota2 + nota3) / 3;
+    return media;
 }
 
 int main(){
-    x=2;
-    x = dobra_valor(func(x));
+    real nota1; real nota2; real nota3; real mediaAluno;
 
-    if( x == 8 ){
-        int z;
+    nota1 = 7;
+    nota2 = 8;
+    nota3 = 9;
 
-        z=0;
-
-        while( y < 50 ){
-            z = y+1;
-        }
-    }
-    else{
-        y[0] = 0;
-        y[1] = 1;
-        y[2] = 2;
-        y[3] = 3;
-        y[4] = 4;
-    }
+    mediaAluno = media(nota1, nota2, nota3);
+    situacaoAluno = situacao(mediaAluno);
 
     return 0;
 }
