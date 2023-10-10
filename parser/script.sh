@@ -1,6 +1,6 @@
 #!/bin/bash
 
-gcc -o analex analisadorLexico.c
+gcc -o analex analisadorLexico.c hash.c 
 
 ./analex code.txt
 
@@ -13,5 +13,5 @@ g++ parser.tab.c -std=c++17 -o parser
 rm parser parser.tab.c analex
 
 
-clear
+# clear
 cat docParser.txt
