@@ -1,0 +1,7 @@
+IDENTIFICADOR	LEXEMA
+id3				dobra_valor
+id0				x
+id1				y
+id5				z
+id2				func
+id4				main

@@ -1,0 +1,28 @@
+int as=4+=6,oi;
+ola.
+(int)
+[16]{50}
+if (c == a)? 12 : 16;
+>av >=as id1&&id2 &id3
+!=bas 6!5
+5.425!
+"oi"!
+'o'!
+/a 
+/*oi
+COMENTARIO*/
+++bas+=a 
+--a -b ->bas 
+*=bas *a * %as %=
+%=as
+/a
+/=a 
+/A 
+3!
+==
+=
+&
+//Teste
+id2 !=
+//Teste
+"ola"

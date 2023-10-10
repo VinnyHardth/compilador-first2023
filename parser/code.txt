@@ -1,0 +1,35 @@
+int x;
+int y[5];
+
+int func(int x){
+    x = x+2;
+    return x;
+}
+
+int dobra_valor( int x ){
+    x = x * 2;
+}
+
+int main(){
+    x=2;
+    x = dobra_valor(func(x));
+
+    if( x == 8 ){
+        int z;
+
+        z=0;
+
+        while( y < 50 ){
+            z = y+1;
+        }
+    }
+    else{
+        y[0] = 0;
+        y[1] = 1;
+        y[2] = 2;
+        y[3] = 3;
+        y[4] = 4;
+    }
+
+    return 0;
+}

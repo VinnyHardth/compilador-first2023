@@ -1,0 +1,13 @@
+IDENTIFICADOR	LEXEMA
+id0				as
+id5				av
+id9				bas
+id4				a
+id11				A
+id10				b
+id3				c
+id1				oi
+id6				id1
+id7				id2
+id8				id3
+id2				ola
