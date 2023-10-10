@@ -4,14 +4,14 @@
 #include <ctype.h>
 
 typedef struct hash_item{
-    char *lexema;           // também é a chave
-    char* id;               // identificador do lexema
-    struct hash_item *prox; // aponta para o proximo item em caso de colisão
+    char *lexema;             // também é a chave
+    char *id;                 // identificador do lexema
+    struct hash_item *prox;   // aponta para o proximo item em caso de colisão
 } hash_item;
 
 typedef struct hash_table{
-    struct hash_item **items; 
-    int size;               // tamanho da tabela
+    struct hash_item **items; // array de ponteiros para hash_item
+    int size;                 // tamanho da tabela
 } hash_table;
 
 hash_item* create_item(char *lexema, int n){
