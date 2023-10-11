@@ -30,7 +30,7 @@ void grava_tabela(hash_table *table){
         }
     }
 
-    printf("Tabela de símbolos gerada.\n");
+    printf("--> Tabela de símbolos gerada...\n");
     fclose(arq);
 }
 
@@ -449,7 +449,7 @@ bool analex(char *token, char *lexema, hash_table *table) {
                 }
                 break;
             case 33: // Estado Final de OP_RESTO
-                strcpy(token, "OP_RESTO");
+                strcpy(token, "OP_MOD");
                 linha_atual--;
                 return true;
                 break;
@@ -467,7 +467,7 @@ bool analex(char *token, char *lexema, hash_table *table) {
                 break;
             case 36: // Estado Final de COMP_IGUAL
                 salvaLexema(&j, lexema, &c);
-                strcpy(token, "COMP_IGUAL");
+                strcpy(token, "OP_EQ");
                 return true;
                 break;
             case 37: // Estado Final de OP_ATRIB
@@ -484,7 +484,7 @@ bool analex(char *token, char *lexema, hash_table *table) {
                 break;
             case 39: // Estado Final de COMP_DIF
                 salvaLexema(&j, lexema, &c);
-                strcpy(token, "COMP_DIF");
+                strcpy(token, "OP_DIF");
                 return true;
                 break;
             case 40: // Estado Final de OP_NOT
@@ -501,11 +501,11 @@ bool analex(char *token, char *lexema, hash_table *table) {
                 break;
             case 42: // Estado Final de MAIOR_IGUAL
                 salvaLexema(&j, lexema, &c);
-                strcpy(token, "MAIOR_IGUAL");
+                strcpy(token, "OP_GE");
                 return true;
                 break;
             case 43: // Estado Final de MAIOR
-                strcpy(token, "MAIOR");
+                strcpy(token, "OP_MAIOR");
                 linha_atual--;
                 return true;
                 break;
@@ -517,13 +517,13 @@ bool analex(char *token, char *lexema, hash_table *table) {
                 }
                 break;
             case 45: // Estado Final de MENOR
-                strcpy(token, "MENOR");
+                strcpy(token, "OP_MENOR");
                 linha_atual--;
                 return true;
                 break;
             case 46: // Estado Final de MENOR_IGUAL
                 salvaLexema(&j, lexema, &c);
-                strcpy(token, "MENOR_IGUAL");
+                strcpy(token, "OP_LE");
                 return true;
                 break;
             case 47:
@@ -537,7 +537,7 @@ bool analex(char *token, char *lexema, hash_table *table) {
                 break;
             case 48: // Estado Final de OU
                 salvaLexema(&j, lexema, &c);
-                strcpy(token, "OU");
+                strcpy(token, "OP_OR");
                 return true;
                 break;
             case 49:
@@ -549,7 +549,7 @@ bool analex(char *token, char *lexema, hash_table *table) {
                 break;
             case 50: // Estado Final de E
                 salvaLexema(&j, lexema, &c);
-                strcpy(token, "E");
+                strcpy(token, "OP_AND");
                 return true;
                 break;
             case 51:// Estado Final de ENDERECO
@@ -558,7 +558,7 @@ bool analex(char *token, char *lexema, hash_table *table) {
                 return true;
                 break;
             case 52: // Estado Final de VIRG
-                strcpy(token, "VIRG");
+                strcpy(token, "SG_COMMA");
                 linha_atual--;
                 return true;
                 break;
@@ -573,32 +573,32 @@ bool analex(char *token, char *lexema, hash_table *table) {
                 return true;
                 break;
             case 55: // Estado Final de ABRE_PAREN
-                strcpy(token, "ABRE_PAREN");
+                strcpy(token, "SG_ABREPAR");
                 linha_atual--;
                 return true;
                 break;
             case 56: // Estado Final de FECHA_PAREN
-                strcpy(token, "FECHA_PAREN");
+                strcpy(token, "SG_FECHAPAR");
                 linha_atual--;
                 return true;
                 break;
             case 57: // Estado Final de FECHA_COLC
-                strcpy(token, "FECHA_COLC");
+                strcpy(token, "SG_FECHACOL");
                 linha_atual--;
                 return true;
                 break;
             case 58: // Estado Final de ABRE_COLC
-                strcpy(token, "ABRE_COLC");
+                strcpy(token, "SG_ABRECOL");
                 linha_atual--;
                 return true;
                 break;
             case 59: // Estado Final de ABRE_CHAV
-                strcpy(token, "ABRE_CHAV");
+                strcpy(token, "SG_ABRECHV");
                 linha_atual--;
                 return true;
                 break;
             case 60: // Estado Final de FECHA_CHAV
-                strcpy(token, "FECHA_CHAV");
+                strcpy(token, "SG_FECHACHV");
                 linha_atual--;
                 return true;
                 break;
@@ -644,12 +644,13 @@ int main(int argc, char *argv[]) {
     hash_table *table = create_table(200); // Cria tabela hash para IDs
 
     // Enquanto o documento ainda não tiver acabado, continuará a análise léxica
+    printf("--> Iniciando Análise Léxica...\n");
     while (1) {
         strcpy(token, "");
         strcpy(lexema, "");
         analex(token, lexema, table);
         if (!strcmp(token, "FIM_DO_ARQUIVO")) {
-            printf("\nFim da Análise Léxica\n\n");
+            printf("\n--> Fim da Análise Léxica...\n\n");
             break;
         } else if (strcmp(token, "")) {
             gravar_token(token, lexema);

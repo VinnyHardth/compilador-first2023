@@ -64,28 +64,28 @@ void yyerror(const char *);
 %token <str> SETA
 %token <str> OP_MULT_REC
 %token <str> OP_MULT
-%token <str> OP_RESTO
-%token <str> OP_RESTO_REC
-%token <str> COMP_IGUAL
+%token <str> OP_MOD
+%token <str> OP_MOD_REC
+%token <str> OP_EQ
 %token <str> OP_ATRIB
-%token <str> COMP_DIF
+%token <str> OP_DIF
 %token <str> OP_NOT
-%token <str> MAIOR_IGUAL
-%token <str> MAIOR
-%token <str> MENOR
-%token <str> MENOR_IGUAL
-%token <str> OU
-%token <str> E
+%token <str> OP_GE
+%token <str> OP_MAIOR
+%token <str> OP_MENOR
+%token <str> OP_LE
+%token <str> OP_OR
+%token <str> OP_AND
 %token <str> ENDERECO
-%token <str> VIRG
+%token <str> SG_COMMA
 %token <str> SG_SEMICOLON
 %token <str> PONTO
-%token <str> ABRE_PAREN
-%token <str> FECHA_PAREN
-%token <str> FECHA_COLC
-%token <str> ABRE_COLC
-%token <str> ABRE_CHAV
-%token <str> FECHA_CHAV
+%token <str> SG_ABREPAR
+%token <str> SG_FECHAPAR
+%token <str> SG_FECHACOL
+%token <str> SG_ABRECOL
+%token <str> SG_ABRECHV
+%token <str> SG_FECHACHV
 %token <str> OP_KW_DOIS_PONTOS
 %token <str> OP_SELEC
 
@@ -113,7 +113,7 @@ espec-tipo: KW_INT //5
 		 |KW_REAL
 		 ;
 
-decl-func: espec-tipo TK_ID ABRE_PAREN params FECHA_PAREN com-comp //6
+decl-func: espec-tipo TK_ID SG_ABREPAR params SG_FECHAPAR com-comp //6
 		 ;
 
 params: lista-param //7
@@ -121,7 +121,7 @@ params: lista-param //7
 	  | /* vazio */
 	  ;
 
-lista-param: lista-param VIRG param //8
+lista-param: lista-param SG_COMMA param //8
 		   | param
 		   ;
 
@@ -172,12 +172,12 @@ exp: exp-soma op-relac exp-soma //19
    | exp-soma
    ;
 
-op-relac: MENOR_IGUAL //20
-		| MENOR
-		| MAIOR
-		| MAIOR_IGUAL
-		| COMP_IGUAL
-		| COMP_DIF
+op-relac: OP_LE //20
+		| OP_MENOR
+		| OP_MAIOR
+		| OP_GE
+		| OP_EQ
+		| OP_DIF
 		;
 
 exp-soma: exp-soma op-soma exp-mult //21
@@ -194,10 +194,10 @@ exp-mult: exp-mult op-mult exp-simples //23
 
 op-mult: OP_MULT //24
 	   | OP_DIV
-	   | OP_RESTO
+	   | OP_MOD
 	   ;
 
-exp-simples: ABRE_PAREN exp FECHA_PAREN //25
+exp-simples: SG_ABREPAR exp SG_FECHAPAR //25
 		   | var
 		   | chama-func
 		   | literais
@@ -207,7 +207,7 @@ literais: NUM_INT //26
 		| NUM_KW_REAL
 		;
 
-chama-func: TK_ID ABRE_PAREN args FECHA_PAREN //27
+chama-func: TK_ID SG_ABREPAR args SG_FECHAPAR //27
 
 var: TK_ID //28
    | TK_ID ABRE_COLC NUM_INT FECHA_COLC
@@ -217,7 +217,7 @@ args: lista-arg //29
 	| /* vazio */
 	;
 
-lista-arg: lista-arg VIRG exp //30
+lista-arg: lista-arg SG_COMMA exp //30
 		 | exp
 		 ;
 
@@ -230,7 +230,7 @@ int yylex() {
 	size_t len;
 	if(flag == 1){
 		/* printf("OK\n"); */
-		fwrite("OK\n",sizeof(char),3,output);
+		fwrite("\n",sizeof(char),3,output);
 	}
 	
 	flag = 1;
@@ -251,11 +251,15 @@ int yylex() {
 
 	if(len >1) lexema[len-1] = '\0';
 
-	/* printf("%s %s ", token,lexema); */
-	fwrite(token,sizeof(char),strlen(token),output);
-	fwrite(" ",sizeof(char),1,output);
+	/* printf("%s %s", token,lexema); */
+	if(strlen(token) <= 7){
+		fwrite(token,sizeof(char),strlen(token),output);
+		fwrite("\t\t\t\t",4,1,output);
+	}else{
+		fwrite(token,sizeof(char),strlen(token),output);
+		fwrite("\t\t\t",3,1,output);
+	}
 	fwrite(lexema,sizeof(char),strlen(lexema),output);
-	fwrite(" ",sizeof(char),1,output);
 
 	yylval.str = new_mystring(lexema, len);
 	/* printf("yylval: %s\n", yylval.str->str); */
@@ -293,35 +297,35 @@ int yylex() {
 	else if(strcmp(token, "SETA") == 0){return SETA;}
 	else if(strcmp(token, "OP_MULT_REC") == 0){return OP_MULT_REC;}
 	else if(strcmp(token, "OP_MULT") == 0){return OP_MULT;}
-	else if(strcmp(token, "OP_RESTO") == 0){return OP_RESTO;}
-	else if(strcmp(token, "OP_RESTO_REC") == 0){return OP_RESTO_REC;}
-	else if(strcmp(token, "COMP_IGUAL") == 0){return COMP_IGUAL;}
+	else if(strcmp(token, "OP_MOD") == 0){return OP_MOD;}
+	else if(strcmp(token, "OP_MOD_REC") == 0){return OP_MOD_REC;}
+	else if(strcmp(token, "OP_EQ") == 0){return OP_EQ;}
 	else if(strcmp(token, "OP_ATRIB") == 0){return OP_ATRIB;}
-	else if(strcmp(token, "COMP_DIF") == 0){return COMP_DIF;}
+	else if(strcmp(token, "OP_DIF") == 0){return OP_DIF;}
 	else if(strcmp(token, "OP_NOT") == 0){return OP_NOT;}
-	else if(strcmp(token, "MAIOR") == 0){return MAIOR;}
-	else if(strcmp(token, "MENOR") == 0){return MENOR;}
-	else if(strcmp(token, "MAIOR_IGUAL") == 0){return MAIOR_IGUAL;}
-	else if(strcmp(token, "MENOR_IGUAL") == 0){return MENOR_IGUAL;}
-	else if(strcmp(token, "OU") == 0){return OU;}
-	else if(strcmp(token, "E") == 0){return E;}
+	else if(strcmp(token, "OP_MAIOR") == 0){return OP_MAIOR;}
+	else if(strcmp(token, "OP_MENOR") == 0){return OP_MENOR;}
+	else if(strcmp(token, "OP_GE") == 0){return OP_GE;}
+	else if(strcmp(token, "OP_LE") == 0){return OP_LE;}
+	else if(strcmp(token, "OP_OR") == 0){return OP_OR;}
+	else if(strcmp(token, "OP_AND") == 0){return OP_AND;}
 	else if(strcmp(token, "ENDERECO") == 0){return ENDERECO;}
-	else if(strcmp(token, "VIRG") == 0){return VIRG;}
+	else if(strcmp(token, "SG_COMMA") == 0){return SG_COMMA;}
 	else if(strcmp(token, "SG_SEMICOLON") == 0){return SG_SEMICOLON;}
 	else if(strcmp(token, "PONTO") == 0){return PONTO;}
-	else if(strcmp(token, "ABRE_PAREN") == 0){return ABRE_PAREN;}
-	else if(strcmp(token, "FECHA_PAREN") == 0){return FECHA_PAREN;}
-	else if(strcmp(token, "FECHA_COLC") == 0){return FECHA_COLC;}
-	else if(strcmp(token, "ABRE_COLC") == 0){return ABRE_COLC;}
-	else if(strcmp(token, "ABRE_CHAV") == 0){return ABRE_CHAV;}
-	else if(strcmp(token, "FECHA_CHAV") == 0){return FECHA_CHAV;}
+	else if(strcmp(token, "SG_ABREPAR") == 0){return SG_ABREPAR;}
+	else if(strcmp(token, "SG_FECHAPAR") == 0){return SG_FECHAPAR;}
+	else if(strcmp(token, "SG_FECHACOL") == 0){return SG_FECHACOL;}
+	else if(strcmp(token, "SG_ABRECOL") == 0){return SG_ABRECOL;}
+	else if(strcmp(token, "SG_ABRECHV") == 0){return SG_ABRECHV;}
+	else if(strcmp(token, "SG_FECHACHV") == 0){return SG_FECHACHV;}
 	else if(strcmp(token, "OP_KW_DOIS_PONTOS") == 0){return OP_KW_DOIS_PONTOS;}
 	else if(strcmp(token, "OP_SELEC") == 0){return OP_SELEC;}
 	else{return 0;}
 }
 
 void yyerror(const char * s){
-	char buffer[50] = "Erro Sintático!\n";
+	char buffer[50] = "\n--> Houve um erro Sintático!\n";
     cout << buffer;
 	fwrite(buffer,sizeof(char),strlen(buffer),output);
    	exit(0);
@@ -339,9 +343,9 @@ int main(int argc, char ** argv){
 		/* entrada ajustada para ler do arquivo */
 	}
 	output = fopen("docParser.txt","wb");
-	printf("\nInicio da Análise sintática!\n\n");
+	printf("\n--> Iniciando Análise Sintática...\n");
 	yyparse();
-	printf("\nFim da Análise!\nCódigo sem erros léxicos ou sintáticos!\n");
+	printf("\n--> Fim da Análise Sintática...\n\n--> Código sem erros Léxicos ou Sintáticos!\n\n");
 	fclose(output);
 	fclose(file);
 }
