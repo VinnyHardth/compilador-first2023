@@ -62,7 +62,7 @@ unsigned int hash_index(const char *key, int size)
 void insert_hash(hash_table* table, char* lexema, int *n){
 
     hash_item* new_item = create_item(lexema, *n);
-    *n+=1;
+    *n+=1; // n é o contador de ids
     int index = hash_index(lexema, table->size);
     hash_item* current_item = table->items[index];
 
