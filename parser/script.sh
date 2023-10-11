@@ -2,15 +2,15 @@
 
 gcc -o analex analisadorLexico.c ../hash/hash.c 
 
-./analex code.txt
+./analex codeExample.txt
 
 bison parser.y
 
 g++ parser.tab.c -std=c++17 -o parser
 
-./parser docLex.txt
+./parser lexOutput.txt
 
 rm parser parser.tab.c analex
 
 # clear
-cat docParser.txt
+cat parserOutput.txt

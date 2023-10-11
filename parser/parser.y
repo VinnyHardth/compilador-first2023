@@ -1,10 +1,10 @@
 %{
 #include <iostream>
 #include <cctype>
-using namespace std;
-
 #include <stdlib.h>
 #include <string.h>
+
+using namespace std;
 
 FILE *file;
 FILE *output;
@@ -31,6 +31,7 @@ void yyerror(const char *);
   mystring *str;
 }
 
+//tokens
 
 %token <str> KW_VOID 
 %token <str> KW_INT
@@ -51,7 +52,7 @@ void yyerror(const char *);
 %token <str> TK_ID
 %token <str> CHAR //Elemento
 %token <str> NUM_INT
-%token <str> NUM_KW_REAL
+%token <str> NUM_REAL
 %token <str> STRING
 %token <str> OP_DIV
 %token <str> OP_DIV_REC
@@ -90,9 +91,9 @@ void yyerror(const char *);
 %token <str> OP_SELEC
 
 %%
-//grammar
+//gramática
 
-////// declarações//////
+////// produções//////
 
 programa: lista-decl //1 
 		;
@@ -152,15 +153,15 @@ com-exp: exp SG_SEMICOLON //13
 com-atrib: var OP_ATRIB exp SG_SEMICOLON //14
 		;
 
-com-comp: ABRE_CHAV decl-locais lista-com FECHA_CHAV //15
+com-comp: SG_ABRECHV decl-locais lista-com SG_FECHACHV //15
 		;
 
-com-selecao: KW_IF ABRE_PAREN exp FECHA_PAREN comando  //16
-		   | KW_IF ABRE_PAREN exp FECHA_PAREN com-comp KW_ELSE comando
+com-selecao: KW_IF SG_ABREPAR exp SG_FECHAPAR comando  //16
+		   | KW_IF SG_ABREPAR exp SG_FECHAPAR com-comp KW_ELSE comando
 		   ;
 
-com-repeticao: KW_WHILE ABRE_PAREN exp FECHA_PAREN comando //18
-			 | KW_DO comando KW_WHILE ABRE_PAREN exp FECHA_PAREN SG_SEMICOLON
+com-repeticao: KW_WHILE SG_ABREPAR exp SG_FECHAPAR comando //18
+			 | KW_DO comando KW_WHILE SG_ABREPAR exp SG_FECHAPAR SG_SEMICOLON
 			 ;
 
 com-retorno: KW_RETURN SG_SEMICOLON //19
@@ -204,13 +205,13 @@ exp-simples: SG_ABREPAR exp SG_FECHAPAR //25
 		   ;
 
 literais: NUM_INT //26
-		| NUM_KW_REAL
+		| NUM_REAL
 		;
 
 chama-func: TK_ID SG_ABREPAR args SG_FECHAPAR //27
 
 var: TK_ID //28
-   | TK_ID ABRE_COLC NUM_INT FECHA_COLC
+   | TK_ID SG_ABRECOL NUM_INT SG_FECHACOL
    ;
 
 args: lista-arg //29
@@ -223,14 +224,14 @@ lista-arg: lista-arg SG_COMMA exp //30
 
 %%
 
+//função principal
 int yylex() {
 	char linha[100];
     char *token;
 	char *lexema;
 	size_t len;
 	if(flag == 1){
-		/* printf("OK\n"); */
-		fwrite("\n",sizeof(char),3,output);
+		fwrite("\n",sizeof(char),1,output);
 	}
 	
 	flag = 1;
@@ -242,16 +243,13 @@ int yylex() {
     fgets(linha, 100, file);
 
 	token = (char*)strtok(linha, "  ");
-	/* printf("Pegando o token: %s\n", token); */
 
 	lexema = (char*)strtok(NULL, "  ");
-	/* printf("Pegando o lexema: %s\n", lexema); */
 
 	len = strlen(lexema);
 
 	if(len >1) lexema[len-1] = '\0';
 
-	/* printf("%s %s", token,lexema); */
 	if(strlen(token) <= 7){
 		fwrite(token,sizeof(char),strlen(token),output);
 		fwrite("\t\t\t\t",4,1,output);
@@ -262,7 +260,6 @@ int yylex() {
 	fwrite(lexema,sizeof(char),strlen(lexema),output);
 
 	yylval.str = new_mystring(lexema, len);
-	/* printf("yylval: %s\n", yylval.str->str); */
 
 	if(strcmp(token, "KW_VOID") == 0){return KW_VOID;}
 	else if(strcmp(token, "KW_INT") == 0){return KW_INT;}
@@ -283,7 +280,7 @@ int yylex() {
 	else if(strcmp(token, "TK_ID") == 0){return TK_ID;}
 	else if(strcmp(token, "CHAR") == 0){return CHAR;}
 	else if(strcmp(token, "NUM_INT") == 0){return NUM_INT;}
-	else if(strcmp(token, "NUM_KW_REAL") == 0){return NUM_KW_REAL;}
+	else if(strcmp(token, "NUM_REAL") == 0){return NUM_REAL;}
 	else if(strcmp(token, "KW_INT") == 0){return KW_INT;}
 	else if(strcmp(token, "STRING") == 0){return STRING;}
 	else if(strcmp(token, "OP_DIV") == 0){return OP_DIV;}
@@ -324,6 +321,7 @@ int yylex() {
 	else{return 0;}
 }
 
+//função de erro
 void yyerror(const char * s){
 	char buffer[50] = "\n--> Houve um erro Sintático!\n";
     cout << buffer;
@@ -339,10 +337,8 @@ int main(int argc, char ** argv){
 			cout << "Arquivo " << argv[1] << " não encontrado\n";
 			exit(1);
 		}
-		
-		/* entrada ajustada para ler do arquivo */
 	}
-	output = fopen("docParser.txt","wb");
+	output = fopen("parserOutput.txt","wb");
 	printf("\n--> Iniciando Análise Sintática...\n");
 	yyparse();
 	printf("\n--> Fim da Análise Sintática...\n\n--> Código sem erros Léxicos ou Sintáticos!\n\n");

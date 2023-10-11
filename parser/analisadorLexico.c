@@ -1,4 +1,4 @@
-#define _GNU_SOURCE // necessário porque getline() é extensão GNU
+#define _GNU_SOURCE 
 #include<stdio.h>
 #include<string.h>
 #include<stdlib.h>
@@ -12,9 +12,10 @@ char linha[2000];    // buffer arbitrário
 bool firstSaved;     // variável para verificar se é o primeiro token a ser salvo
 int count_id = 0;    // contador de id's
 
+// Função para gravar a tabela de símbolos em um arquivo
 void grava_tabela(hash_table *table){
 
-    FILE *arq = fopen("Tabela_de_simbolos.txt", "wt");
+    FILE *arq = fopen("symbolTable.txt", "wt");
     if (arq == NULL) {
         printf("Problemas na CRIACAO do arquivo\n");
         return;
@@ -34,7 +35,7 @@ void grava_tabela(hash_table *table){
     fclose(arq);
 }
 
-
+// Função para gravar os tokens em um arquivo
 void gravar_token(char *token, char *lexema) {
     char buffer[strlen(token)+strlen(lexema)+2];
     
@@ -49,12 +50,12 @@ void gravar_token(char *token, char *lexema) {
     strcat(buffer, " ");
     strcat(buffer, lexema);
     
-    FILE *docLex = fopen("docLex.txt", "ab");
+    FILE *docLex = fopen("lexOutput.txt", "ab");
     fwrite(buffer, sizeof(char), strlen(buffer), docLex);
     fclose(docLex);
 }
 
-
+// Função para obter o próximo caractere do arquivo
 char prox_char() {
     if (strlen(linha) == 0) {
         if (fgets(linha, sizeof(linha), file) == NULL) {
@@ -79,21 +80,20 @@ char prox_char() {
     return c;
 }
 
-
-
-
+// Função para salvar o lexema
 void salvaLexema(int *j, char *lexema, char *c) {
     lexema[*j] = *c;
     (*j)++;
     lexema[*j] = '\0';
 }
 
+// Função para avançar o caractere
 void avanca(int *j, char *lexema, char *c) {
     salvaLexema(j, lexema, c);
     *c = prox_char();
 }
 
-
+// Função para verificar o estado atual
 int estado0(char c) {
     int estado;
 
@@ -137,7 +137,7 @@ int estado0(char c) {
     return estado;
 }
 
-
+// Função para verificar se é uma palavra reservada ou um ID
 char* palavraReservada(char *lexema){
     if(strcmp("void", lexema) == 0){
         return "KW_VOID";
@@ -192,6 +192,7 @@ char* palavraReservada(char *lexema){
     }
 }
 
+// Função para analisar o lexema
 bool analex(char *token, char *lexema, hash_table *table) {
     char c = prox_char();
     int estado = 0;
@@ -213,7 +214,7 @@ bool analex(char *token, char *lexema, hash_table *table) {
                     estado = 2;
                 }
                 break;
-            case 2: // Estado Final de ID/Palavras Chave
+            case 2: // Estado Final de ID ou palavra reservada
                 strcpy(token, palavraReservada(lexema));
                 if (strcmp(token, "TK_ID") == 0) {
                     insert_hash(table, lexema, &count_id);
@@ -278,7 +279,7 @@ bool analex(char *token, char *lexema, hash_table *table) {
                 }
                 avanca(&j, lexema, &c);
                 break;
-            case 9: // Estado Final de String
+            case 9: // Estado Final de STRING
                 strcpy(token, "STRING");
                 linha_atual--;
                 return true;
@@ -448,7 +449,7 @@ bool analex(char *token, char *lexema, hash_table *table) {
                     estado = 33;
                 }
                 break;
-            case 33: // Estado Final de OP_RESTO
+            case 33: // Estado Final de OP_MOD
                 strcpy(token, "OP_MOD");
                 linha_atual--;
                 return true;
@@ -482,7 +483,7 @@ bool analex(char *token, char *lexema, hash_table *table) {
                     estado = 40;
                 }
                 break;
-            case 39: // Estado Final de COMP_DIF
+            case 39: // Estado Final de OP_DIF
                 salvaLexema(&j, lexema, &c);
                 strcpy(token, "OP_DIF");
                 return true;
@@ -557,12 +558,12 @@ bool analex(char *token, char *lexema, hash_table *table) {
                 linha_atual--;
                 return true;
                 break;
-            case 52: // Estado Final de VIRG
+            case 52: // Estado Final de VIRGULA
                 strcpy(token, "SG_COMMA");
                 linha_atual--;
                 return true;
                 break;
-            case 53: // Estado Final de PV
+            case 53: // Estado Final de PONTO_VIRGULA
                 strcpy(token, "SG_SEMICOLON");
                 linha_atual--;
                 return true;
@@ -624,13 +625,13 @@ bool analex(char *token, char *lexema, hash_table *table) {
 int main(int argc, char *argv[]) {
 
 
-    file = fopen("code.txt", "r"); // Abertura do arquivo de entrada
+    file = fopen("codeExample.txt", "r"); // Abertura do arquivo de entrada
     if (file == NULL) {
         printf("Erro ao abrir o arquivo de entrada.\n");
         return 1;
     }
     
-    docLex = fopen("docLex.txt", "w"); // Abertura do arquivo de saída
+    docLex = fopen("lexOutput.txt", "w"); // Abertura do arquivo de saída
     if (docLex == NULL) {
         printf("Erro ao criar o arquivo de saída.\n");
         fclose(file);
@@ -643,7 +644,6 @@ int main(int argc, char *argv[]) {
     char *lexema = malloc(100000 * sizeof(char));
     hash_table *table = create_table(200); // Cria tabela hash para IDs
 
-    // Enquanto o documento ainda não tiver acabado, continuará a análise léxica
     printf("--> Iniciando Análise Léxica...\n");
     while (1) {
         strcpy(token, "");
@@ -657,8 +657,10 @@ int main(int argc, char *argv[]) {
         }
     }
 
+    // Grava a tabela de símbolos em um arquivo
     grava_tabela(table);
 
+    // Libera memória alocada e fecha arquivos
     free(lexema);
     fclose(file);
     fclose(docLex);

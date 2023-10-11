@@ -2,11 +2,10 @@ IDENTIFICADOR	|	LEXEMA
 
 id0					situacao
 id1					nota
-id8					mediaAluno
+id7					mediaAluno
 id2					media
 id3					nota1
 id4					nota2
 id5					nota3
 id6					main
-id9					situacaoAluno
-id7					penis
+id8					situacaoAluno
