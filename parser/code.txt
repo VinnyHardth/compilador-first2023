@@ -13,7 +13,9 @@ real media (real nota1, real nota2, real nota3){
     return media;
 }
 
+
 int main(){
+    int penis;
     real nota1; real nota2; real nota3; real mediaAluno;
     nota1 = 7;
     nota2 = 8;

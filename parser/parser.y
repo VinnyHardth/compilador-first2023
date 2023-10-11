@@ -32,26 +32,26 @@ void yyerror(const char *);
 }
 
 
-%token <str> VOID 
-%token <str> INT
-%token <str> REAL
-%token <str> CHAR_t 
-%token <str> BOOL
-%token <str> IF
-%token <str> ELSE
-%token <str> FOR
-%token <str> WHILE
-%token <str> DO
-%token <str> RETURN
-%token <str> BREAK
-%token <str> CONTINUE
-%token <str> GOTO
-%token <str> True
-%token <str> False
-%token <str> ID
+%token <str> KW_VOID 
+%token <str> KW_INT
+%token <str> KW_REAL
+%token <str> KW_CHAR 
+%token <str> KW_BOOL
+%token <str> KW_IF
+%token <str> KW_ELSE
+%token <str> KW_FOR
+%token <str> KW_WHILE
+%token <str> KW_DO
+%token <str> KW_RETURN
+%token <str> KW_BREAK
+%token <str> KW_CONTINUE
+%token <str> KW_GOTO
+%token <str> KW_TRUE
+%token <str> KW_FALSE
+%token <str> TK_ID
 %token <str> CHAR //Elemento
 %token <str> NUM_INT
-%token <str> NUM_REAL
+%token <str> NUM_KW_REAL
 %token <str> STRING
 %token <str> OP_DIV
 %token <str> OP_DIV_REC
@@ -78,7 +78,7 @@ void yyerror(const char *);
 %token <str> E
 %token <str> ENDERECO
 %token <str> VIRG
-%token <str> PV
+%token <str> SG_SEMICOLON
 %token <str> PONTO
 %token <str> ABRE_PAREN
 %token <str> FECHA_PAREN
@@ -86,7 +86,7 @@ void yyerror(const char *);
 %token <str> ABRE_COLC
 %token <str> ABRE_CHAV
 %token <str> FECHA_CHAV
-%token <str> OP_DOIS_PONTOS
+%token <str> OP_KW_DOIS_PONTOS
 %token <str> OP_SELEC
 
 %%
@@ -105,19 +105,19 @@ decl: decl-var //3
 	| decl-func
 	;
 
-decl-var: espec-tipo var PV //4
+decl-var: espec-tipo var SG_SEMICOLON //4
 		;
 
-espec-tipo: INT //5
-		 | VOID
-		 |REAL
+espec-tipo: KW_INT //5
+		 | KW_VOID
+		 |KW_REAL
 		 ;
 
-decl-func: espec-tipo ID ABRE_PAREN params FECHA_PAREN com-comp //6
+decl-func: espec-tipo TK_ID ABRE_PAREN params FECHA_PAREN com-comp //6
 		 ;
 
 params: lista-param //7
-	  | VOID
+	  | KW_VOID
 	  | /* vazio */
 	  ;
 
@@ -145,26 +145,26 @@ comando: com-exp //12
 	   | com-retorno
 	   ;
 
-com-exp: exp PV //13
-		| PV
+com-exp: exp SG_SEMICOLON //13
+		| SG_SEMICOLON
 		;
 
-com-atrib: var OP_ATRIB exp PV //14
+com-atrib: var OP_ATRIB exp SG_SEMICOLON //14
 		;
 
 com-comp: ABRE_CHAV decl-locais lista-com FECHA_CHAV //15
 		;
 
-com-selecao: IF ABRE_PAREN exp FECHA_PAREN comando  //16
-		   | IF ABRE_PAREN exp FECHA_PAREN com-comp ELSE comando
+com-selecao: KW_IF ABRE_PAREN exp FECHA_PAREN comando  //16
+		   | KW_IF ABRE_PAREN exp FECHA_PAREN com-comp KW_ELSE comando
 		   ;
 
-com-repeticao: WHILE ABRE_PAREN exp FECHA_PAREN comando //18
-			 | DO comando WHILE ABRE_PAREN exp FECHA_PAREN PV
+com-repeticao: KW_WHILE ABRE_PAREN exp FECHA_PAREN comando //18
+			 | KW_DO comando KW_WHILE ABRE_PAREN exp FECHA_PAREN SG_SEMICOLON
 			 ;
 
-com-retorno: RETURN PV //19
-		   | RETURN exp PV
+com-retorno: KW_RETURN SG_SEMICOLON //19
+		   | KW_RETURN exp SG_SEMICOLON
 		   ;
 
 //////expressões//////
@@ -204,13 +204,13 @@ exp-simples: ABRE_PAREN exp FECHA_PAREN //25
 		   ;
 
 literais: NUM_INT //26
-		| NUM_REAL
+		| NUM_KW_REAL
 		;
 
-chama-func: ID ABRE_PAREN args FECHA_PAREN //27
+chama-func: TK_ID ABRE_PAREN args FECHA_PAREN //27
 
-var: ID //28
-   | ID ABRE_COLC NUM_INT FECHA_COLC
+var: TK_ID //28
+   | TK_ID ABRE_COLC NUM_INT FECHA_COLC
    ;
 
 args: lista-arg //29
@@ -260,27 +260,27 @@ int yylex() {
 	yylval.str = new_mystring(lexema, len);
 	/* printf("yylval: %s\n", yylval.str->str); */
 
-	if(strcmp(token, "VOID") == 0){return VOID;}
-	else if(strcmp(token, "INT") == 0){return INT;}
-	else if(strcmp(token, "REAL")== 0){return REAL;}
-	else if(strcmp(token, "CHAR_t") == 0){return CHAR_t;}
-	else if(strcmp(token, "BOOL") == 0){return BOOL;}
-	else if(strcmp(token, "IF") == 0){return IF;}
-	else if(strcmp(token, "ELSE") == 0){return ELSE;}
-	else if(strcmp(token, "FOR") == 0){return FOR;}
-	else if(strcmp(token, "WHILE") == 0){return WHILE;}
-	else if(strcmp(token, "DO") == 0){return DO;}
-	else if(strcmp(token, "RETURN") == 0){return RETURN;}
-	else if(strcmp(token, "BREAK") == 0){return BREAK;}
-	else if(strcmp(token, "CONTINUE") == 0){return CONTINUE;}
-	else if(strcmp(token, "GOTO") == 0){return GOTO;}
-	else if(strcmp(token, "True") == 0){return True;}
-	else if(strcmp(token, "False") == 0){return False;}
-	else if(strcmp(token, "ID") == 0){return ID;}
+	if(strcmp(token, "KW_VOID") == 0){return KW_VOID;}
+	else if(strcmp(token, "KW_INT") == 0){return KW_INT;}
+	else if(strcmp(token, "KW_REAL")== 0){return KW_REAL;}
+	else if(strcmp(token, "KW_CHAR") == 0){return KW_CHAR;}
+	else if(strcmp(token, "KW_BOOL") == 0){return KW_BOOL;}
+	else if(strcmp(token, "KW_IF") == 0){return KW_IF;}
+	else if(strcmp(token, "KW_ELSE") == 0){return KW_ELSE;}
+	else if(strcmp(token, "KW_FOR") == 0){return KW_FOR;}
+	else if(strcmp(token, "KW_WHILE") == 0){return KW_WHILE;}
+	else if(strcmp(token, "KW_DO") == 0){return KW_DO;}
+	else if(strcmp(token, "KW_RETURN") == 0){return KW_RETURN;}
+	else if(strcmp(token, "KW_BREAK") == 0){return KW_BREAK;}
+	else if(strcmp(token, "KW_CONTINUE") == 0){return KW_CONTINUE;}
+	else if(strcmp(token, "KW_GOTO") == 0){return KW_GOTO;}
+	else if(strcmp(token, "True") == 0){return KW_TRUE;}
+	else if(strcmp(token, "False") == 0){return KW_FALSE;}
+	else if(strcmp(token, "TK_ID") == 0){return TK_ID;}
 	else if(strcmp(token, "CHAR") == 0){return CHAR;}
 	else if(strcmp(token, "NUM_INT") == 0){return NUM_INT;}
-	else if(strcmp(token, "NUM_REAL") == 0){return NUM_REAL;}
-	else if(strcmp(token, "INT") == 0){return INT;}
+	else if(strcmp(token, "NUM_KW_REAL") == 0){return NUM_KW_REAL;}
+	else if(strcmp(token, "KW_INT") == 0){return KW_INT;}
 	else if(strcmp(token, "STRING") == 0){return STRING;}
 	else if(strcmp(token, "OP_DIV") == 0){return OP_DIV;}
 	else if(strcmp(token, "OP_DIV_REC") == 0){return OP_DIV_REC;}
@@ -288,7 +288,7 @@ int yylex() {
 	else if(strcmp(token, "OP_SOMA") == 0){return OP_SOMA;}
 	else if(strcmp(token, "OP_SOMA_REC") == 0){return OP_SOMA_REC;}
 	else if(strcmp(token, "OP_SUB") == 0){return OP_SUB;}
-	else if(strcmp(token, "OP_DEC") == 0){return INT;}
+	else if(strcmp(token, "OP_DEC") == 0){return KW_INT;}
 	else if(strcmp(token, "OP_SUB_REC") == 0){return OP_SUB_REC;}
 	else if(strcmp(token, "SETA") == 0){return SETA;}
 	else if(strcmp(token, "OP_MULT_REC") == 0){return OP_MULT_REC;}
@@ -307,7 +307,7 @@ int yylex() {
 	else if(strcmp(token, "E") == 0){return E;}
 	else if(strcmp(token, "ENDERECO") == 0){return ENDERECO;}
 	else if(strcmp(token, "VIRG") == 0){return VIRG;}
-	else if(strcmp(token, "PV") == 0){return PV;}
+	else if(strcmp(token, "SG_SEMICOLON") == 0){return SG_SEMICOLON;}
 	else if(strcmp(token, "PONTO") == 0){return PONTO;}
 	else if(strcmp(token, "ABRE_PAREN") == 0){return ABRE_PAREN;}
 	else if(strcmp(token, "FECHA_PAREN") == 0){return FECHA_PAREN;}
@@ -315,7 +315,7 @@ int yylex() {
 	else if(strcmp(token, "ABRE_COLC") == 0){return ABRE_COLC;}
 	else if(strcmp(token, "ABRE_CHAV") == 0){return ABRE_CHAV;}
 	else if(strcmp(token, "FECHA_CHAV") == 0){return FECHA_CHAV;}
-	else if(strcmp(token, "OP_DOIS_PONTOS") == 0){return OP_DOIS_PONTOS;}
+	else if(strcmp(token, "OP_KW_DOIS_PONTOS") == 0){return OP_KW_DOIS_PONTOS;}
 	else if(strcmp(token, "OP_SELEC") == 0){return OP_SELEC;}
 	else{return 0;}
 }

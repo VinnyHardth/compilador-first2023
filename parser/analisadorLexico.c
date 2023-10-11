@@ -140,55 +140,55 @@ int estado0(char c) {
 
 char* palavraReservada(char *lexema){
     if(strcmp("void", lexema) == 0){
-        return "VOID";
+        return "KW_VOID";
     }
     else if(strcmp("int", lexema) == 0){
-        return "INT";
+        return "KW_INT";
     }
     else if(strcmp("real", lexema) == 0){
-        return "REAL";
+        return "KW_REAL";
     }
     else if(strcmp("char", lexema) == 0){
-        return "CHAR_t";
+        return "KW_CHAR";
     }
     else if(strcmp("bool", lexema) == 0){
-        return "BOOL";
+        return "KW_BOOL";
     }
     else if(strcmp("if", lexema) == 0){
-        return "IF";
+        return "KW_IF";
     }
     else if(strcmp("else", lexema) == 0){
-        return "ELSE";
+        return "KW_ELSE";
     }
     else if(strcmp("for", lexema) == 0){
-        return "FOR";
+        return "KW_FOR";
     }
     else if(strcmp("while", lexema) == 0){
-        return "WHILE";
+        return "KW_WHILE";
     }
     else if(strcmp("do", lexema) == 0){
-        return "DO";
+        return "KW_DO";
     }
     else if(strcmp("return", lexema) == 0){
-        return "RETURN";
+        return "KW_RETURN";
     }
     else if(strcmp("break", lexema) == 0){
-        return "BREAK";
+        return "KW_BREAK";
     }
     else if(strcmp("continue", lexema) == 0){
-        return "CONTINUE";
+        return "KW_CONTINUE";
     }
     else if(strcmp("goto", lexema) == 0){
-        return "GOTO";
+        return "KW_GOTO";
     }
     else if(strcmp("true", lexema) == 0){
-        return "TRUE";
+        return "KW_TRUE";
     }
     else if(strcmp("false", lexema) == 0){
-        return "FALSE";
+        return "KW_FALSE";
     }
     else{
-        return "ID";
+        return "TK_ID";
     }
 }
 
@@ -215,7 +215,7 @@ bool analex(char *token, char *lexema, hash_table *table) {
                 break;
             case 2: // Estado Final de ID/Palavras Chave
                 strcpy(token, palavraReservada(lexema));
-                if (strcmp(token, "ID") == 0) {
+                if (strcmp(token, "TK_ID") == 0) {
                     insert_hash(table, lexema, &count_id);
                 }
                 linha_atual--;
@@ -563,7 +563,7 @@ bool analex(char *token, char *lexema, hash_table *table) {
                 return true;
                 break;
             case 53: // Estado Final de PV
-                strcpy(token, "PV");
+                strcpy(token, "SG_SEMICOLON");
                 linha_atual--;
                 return true;
                 break;
