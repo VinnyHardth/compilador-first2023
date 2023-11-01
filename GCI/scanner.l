@@ -452,21 +452,21 @@
 	}
 
 	// Imprime a tabela de símbolos (ST) formatada, mostrando símbolo, classe, tipo, valor, número da linha, nível de aninhamento e contagem de parâmetros.
-	void printST()
-	{
-		printf("%10s | %15s | %10s | %10s | %10s | %15s | %10s |\n","SYMBOL", "CLASS", "TYPE","VALUE", "LINE NO", "NESTING", "PARAMS COUNT");
-		for(int i=0;i<100;i++) {
-			printf("-");
-		}
-		printf("\n");
-		for(int i = 0 ; i < 1001 ; i++)
-		{
-			if(ST[i].length == 0)
-			{
-				continue;
-			}
-			printf("%10s | %15s | %10s | %10s | %10d | %15d | %10d |\n",ST[i].name, ST[i].class, ST[i].type, ST[i].value, ST[i].lineno, ST[i].nestval, ST[i].params_count);
-		}
+	 void printST()
+    {
+        printf("%10s | %15s | %10s | %10s | %10s |\n","SYMBOL", "CLASS", "TYPE","VALUE", "LINE NO");
+        for(int i=0;i<81;i++) {
+            printf("-");
+        }
+        printf("\n");
+        for(int i = 0 ; i < 1001 ; i++)
+        {
+            if(ST[i].length == 0)
+            {
+                continue;
+            }
+            printf("%10s | %15s | %10s | %10s | %10d |\n",ST[i].name, ST[i].class, ST[i].type, ST[i].value, ST[i].lineno);
+        }
     }
 
 	// Imprime a tabela de constantes (CT) formatada, mostrando nome e tipo.
@@ -497,21 +497,12 @@ DE "define"
 IN "include"
 
 %%
-// Incrementa o contador de linha quando uma nova linha é encontrada.
 \n 	{yylineno++;}
-
-// Ignora diretivas de pré-processador e espaços.
 ([#][" "]*({IN})[ ]*([<]?)([A-Za-z]+)[.]?([A-Za-z]*)([>]?))/["\n"|\/|" "|"\t"]	{ }
 ([#][" "]*({DE})[" "]*([A-Za-z]+)(" ")*[0-9]+)/["\n"|\/|" "|"\t"]				{ } 
-
-// Ignora comentários de linha única.
 \/\/(.*)																		{ }
-
-// Ignora comentários de múltiplas linhas.
 \/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+\/										{ }
 [ \n\t] ;
-
-// Retorna o token correspondente ao lexema encontrado.
 ";"				{ return(';'); }
 ","				{ return(','); }
 ("{")			{ return('{'); }
@@ -523,7 +514,6 @@ IN "include"
 ":"				{ return(':'); }
 "."				{ return('.'); }
 
-// Identifica os tipos de dados e palavras-chave.
 "char"			{ strcpy(curtype,yytext); insertST(yytext, "Keyword");return CHAR;}
 "double"		{ strcpy(curtype,yytext); insertST(yytext, "Keyword"); return DOUBLE;}
 "else"			{ insertST(yytext, "Keyword"); return ELSE;}
@@ -544,7 +534,7 @@ IN "include"
 "break"			{ insertST(yytext, "Keyword");  return BREAK;}
 
 
-// Identifica os operadores.
+
 "++"			{ return increment_operator; }
 "--"			{ return decrement_operator; }
 "<<"			{ return leftshift_operator; }
@@ -579,7 +569,6 @@ IN "include"
 "|"				{ return pipe_operator; }
 \=				{ return assignment_operator;}
 
-// Constantes e identificadores.
 \"[^\n]*\"/[;|,|\)] 			{strcpy(curval,yytext); insertCT(yytext,"String Constant"); return string_constant;}
 \'[A-Z|a-z]\'/[;|,|\)|:] 		{strcpy(curval,yytext); insertCT(yytext,"Character Constant"); return character_constant;}
 [a-z|A-Z]([a-z|A-Z]|[0-9])*/\[ 	{strcpy(curid,yytext); insertST(yytext, "Array Identifier");  return array_identifier;}
@@ -587,7 +576,6 @@ IN "include"
 ([0-9]*)\.([0-9]+)/[;|,|" "|\)|<|>|=|\!|\||&|\+|\-|\*|\/|\%|~|\n|\t|\^] 	{strcpy(curval,yytext); insertCT(yytext, "Floating Constant"); return float_constant;}
 [A-Za-z_][A-Za-z_0-9]* {strcpy(curid,yytext); insertST(curid,"Identifier"); return identifier;}
 
-// Trata erros diversos, como diretivas de pré-processador malformadas, comentários não fechados, strings incompletas, etc.
 (.?) {
 		if(yytext[0]=='#')
 		{
