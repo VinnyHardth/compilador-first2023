@@ -1,6 +1,3 @@
-AMARELO='\033[1;33m'
-SEM_COR='\033[0m'
-
 function executar_teste_unico() {
   flex scanner.l && bison -o y.tab.c -d parser.y && gcc y.tab.c lex.yy.c -w
   local nome_arquivo="$1"
