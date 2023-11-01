@@ -12,6 +12,13 @@ char linha[2000];    // buffer arbitrário
 bool firstSaved;     // variável para verificar se é o primeiro token a ser salvo
 int count_id = 0;    // contador de id's
 
+typedef struct ASTNode {
+    char* tipo; // Tipo do nó (identificador, número, operador, etc.)
+    char* valor; // Valor do nó (lexema ou valor numérico)
+    struct ASTNode* filho_esquerda;
+    struct ASTNode* filho_direita;
+} ASTNode;
+
 // Função para gravar a tabela de símbolos em um arquivo
 void grava_tabela(hash_table *table){
 
@@ -622,46 +629,51 @@ bool analex(char *token, char *lexema, hash_table *table) {
 }
 
 
+
 int main(int argc, char *argv[]) {
-
-
     file = fopen("codeExample.txt", "r"); // Abertura do arquivo de entrada
     if (file == NULL) {
         printf("Erro ao abrir o arquivo de entrada.\n");
         return 1;
     }
-    
-    docLex = fopen("lexOutput.txt", "w"); // Abertura do arquivo de saída
+
+    docLex = fopen("lexOutput.txt", "w"); // Abertura do arquivo de saída léxica
     if (docLex == NULL) {
-        printf("Erro ao criar o arquivo de saída.\n");
+        printf("Erro ao criar o arquivo de saída léxica.\n");
         fclose(file);
         return 1;
     }
 
-    strcpy(linha, "");
-    firstSaved = false;
     char token[15];
-    char *lexema = malloc(100000 * sizeof(char));
+    char lexema[100000];
     hash_table *table = create_table(200); // Cria tabela hash para IDs
 
     printf("--> Iniciando Análise Léxica...\n");
+    ASTNode* root = createASTNode("PROGRAMA", ""); // Cria o nó raiz da AST
+    ASTNode* current = root;
+
+    // Loop para análise léxica e construção da AST
     while (1) {
         strcpy(token, "");
         strcpy(lexema, "");
-        analex(token, lexema, table);
-        if (!strcmp(token, "FIM_DO_ARQUIVO")) {
-            printf("\n--> Fim da Análise Léxica...\n\n");
+        if (!analex(token, lexema, table)) {
             break;
-        } else if (strcmp(token, "")) {
-            gravar_token(token, lexema);
         }
+
+        // Adiciona o token à AST
+        ASTNode* node = createASTNode(token, lexema);
+        current->filho_esquerda = node;
+        current = node;
     }
 
     // Grava a tabela de símbolos em um arquivo
     grava_tabela(table);
 
+    // Gera o código intermediário a partir da AST
+    generateIntermediateCode(root);
+
     // Libera memória alocada e fecha arquivos
-    free(lexema);
+    freeAST(root); // Função para liberar a memória da AST
     fclose(file);
     fclose(docLex);
     free(table);

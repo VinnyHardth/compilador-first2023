@@ -1,29 +1,12 @@
 //Exemplo de um programa para calcular a média de um aluno e verificar se ele foi aprovado ou não
 
-int situacao (real nota){
-    if (nota >= 7){
-        return 1;
-    }
-    else{
-        return 0;
-    }
-}
-
-real media (real nota1, real nota2, real nota3){
-    real media;
-    media = (nota1 + nota2 + nota3) / 3.0;
-    return media;
-}
-
-
 int main(){
-    real nota1; real nota2; real nota3; real mediaAluno;
-    nota1 = 7.0;
-    nota2 = 8.0;
-    nota3 = 9.0;
+    int nota1; int nota2; int total;
 
-    mediaAluno = media(nota1, nota2, nota3);
-    situacaoAluno = situacao(mediaAluno);
+    nota1 = 10;
+    nota2 = 10;
+
+    total = nota1 + nota2;
 
     return 0;
 }
