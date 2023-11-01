@@ -12,6 +12,7 @@
 	#define ANSI_COLOR_CYAN		"\x1b[36m"
 	#define ANSI_COLOR_RESET	"\x1b[0m"
 
+	// Definição da estrutura para a tabela de símbolos
 	struct symboltable
 	{
 		char name[100];
@@ -24,6 +25,7 @@
 		int params_count;
 	}ST[1001];
 
+	// Definição da estrutura para a tabela de constantes
 	struct constanttable
 	{
 		char name[100];
@@ -34,6 +36,7 @@
 	int currnest = 0;
 	extern int yylval;
 
+	// Função para calcular o hash
 	int hash(char *str)
 	{
 		int value = 0;
@@ -47,6 +50,8 @@
 		return value;
 	}
 
+	// Procura por um símbolo na tabela de símbolos (ST) usando a string 'str' como chave.
+	// Retorna o índice na tabela de símbolos onde o símbolo foi encontrado, ou 0 se não for encontrado.
 	int lookupST(char *str)
 	{
 		int value = hash(str);
@@ -73,6 +78,8 @@
 		}
 	}
 
+	// Procura por uma constante na tabela de constantes (CT) usando a string 'str' como chave.
+	// Retorna 1 se a constante for encontrada, ou 0 se não for encontrada.
 	int lookupCT(char *str)
 	{
 		int value = hash(str);
@@ -93,6 +100,8 @@
 		}
 	}
 
+	// Atualiza o número da linha de um símbolo na tabela de símbolos (ST).
+	// A função busca o símbolo 'str1' na tabela e atualiza seu número da linha para 'line'.
 	void insertSTline(char *str1, int line)
 	{
 		for(int i = 0 ; i < 1001 ; i++)
@@ -104,7 +113,9 @@
 		}
 	}
 
-
+	// Insere um novo símbolo na tabela de símbolos (ST) com o nome 'str1' e a classe 'str2'.
+	// Se o símbolo já existir como um identificador e for tentado inserir como um identificador de array, um erro é exibido.
+	// Se o símbolo não existir, ele é inserido na tabela.
 	void insertST(char *str1, char *str2)
 	{
 		if(lookupST(str1))
@@ -149,6 +160,8 @@
 		}
 	}
 
+	// Atualiza o tipo de um símbolo na tabela de símbolos (ST).
+	// A função busca o símbolo 'str1' na tabela e atualiza seu tipo para 'str2'.
 	void insertSTtype(char *str1, char *str2)
 	{
 		for(int i = 0 ; i < 1001 ; i++)
@@ -160,6 +173,8 @@
 		}
     }
 
+	// Atualiza o valor de um símbolo na tabela de símbolos (ST) se ele estiver no nível de aninhamento atual (currnest).
+	// A função busca o símbolo 'str1' na tabela e, se estiver no nível de aninhamento correto, atualiza seu valor para 'str2'.
 	void insertSTvalue(char *str1, char *str2)
 	{
 		for(int i = 0 ; i < 1001 ; i++)
@@ -171,7 +186,9 @@
 		}
 	}
 
-
+	// Insere ou atualiza o nível de aninhamento de um símbolo na tabela de símbolos (ST).
+	// Se o símbolo já existir com um nível de aninhamento diferente de 9999, ele é inserido novamente com o novo nível de aninhamento 'nest'.
+	// Caso contrário, o nível de aninhamento do símbolo existente é atualizado.
 	void insertSTnest(char *s, int nest)
 	{
 		if(lookupST(s) && ST[lookupST(s)].nestval != 9999)
@@ -206,6 +223,8 @@
 		}
 	}
 
+	// Atualiza a contagem de parâmetros de um símbolo na tabela de símbolos (ST).
+	// A função busca o símbolo 's' na tabela e atualiza sua contagem de parâmetros para 'count1'.
 	void insertSTparamscount(char *s, int count1)
 	{
 
@@ -218,6 +237,9 @@
 		}
 	}
 
+	// Retorna a contagem de parâmetros de um símbolo na tabela de símbolos (ST).
+	// A função busca o símbolo 's' na tabela e retorna sua contagem de parâmetros.
+	// Se o símbolo não for encontrado, retorna -1.
 	int getSTparamscount(char *s)
 	{
 		for(int i = 0 ; i < 1001 ; i++)
@@ -230,6 +252,8 @@
 		return -1;
 	}
 
+	// Atualiza a classe de um símbolo na tabela de símbolos (ST) para "Function".
+	// A função busca o símbolo 's' na tabela e, se encontrado, atualiza sua classe para "Function".
 	void insertSTF(char *s)
 	{
 		for(int i = 0 ; i < 1001 ; i++)
@@ -243,6 +267,9 @@
 
 	}
 
+	// Insere um novo símbolo na tabela de constantes (CT) com o nome 'str1' e o tipo 'str2'.
+	// Se o símbolo já existir, a função retorna sem fazer alterações.
+	// Se não, o símbolo é inserido na tabela.
 	void insertCT(char *str1, char *str2)
 	{
 		if(lookupCT(str1))
@@ -275,6 +302,8 @@
 		}
 	}
 
+	// Marca todos os símbolos na tabela de símbolos (ST) com um determinado nível de aninhamento 'nesting' como deletados, 
+	// atualizando seu nível de aninhamento para um valor alto (99999).
 	void deletedata (int nesting)
 	{
 		for(int i = 0 ; i < 1001 ; i++)
@@ -288,6 +317,8 @@
 
 	}
 
+	// Verifica se um símbolo 's' está no escopo atual ou em um escopo mais interno.
+	// Retorna 1 se o símbolo estiver no escopo atual ou em um escopo mais externo, e 0 se estiver em um escopo mais interno.
 	int checkscope(char *s)
 	{
 		int flag = 0;
@@ -316,6 +347,8 @@
 		}
 	}
 
+	// Verifica se um identificador 's' na tabela de símbolos (ST) é uma função.
+	// Retorna 1 se for uma função, e 0 caso contrário.
 	int check_id_is_func(char *s)
 	{
 		for(int i = 0 ; i < 1000 ; i++)
@@ -329,6 +362,8 @@
 		return 0;
 	}
 
+	// Verifica se um identificador 's' na tabela de símbolos (ST) é um identificador de array.
+	// Retorna 0 se for um identificador de array, e 1 caso contrário.
 	int checkarray(char *s)
 	{
 		for(int i = 0 ; i < 1000 ; i++)
@@ -344,6 +379,8 @@
 		return 1;
 	}
 
+	// Verifica se um símbolo 's' já existe na tabela de símbolos (ST) no escopo atual (currnest).
+	// Retorna 1 se um duplicado for encontrado no mesmo escopo, e 0 caso contrário.
 	int duplicate(char *s)
 	{
 		for(int i = 0 ; i < 1000 ; i++)
@@ -360,6 +397,8 @@
 		return 0;
 	}
 
+	// Verifica se uma função com o nome 'str' já foi declarada na tabela de símbolos (ST).
+	// Se uma duplicata for encontrada, exibe uma mensagem de erro e encerra o programa.
 	int check_duplicate(char* str)
 	{
 		for(int i=0; i<1001; i++)
@@ -372,6 +411,8 @@
 		}
 	}
 
+	// Verifica se um símbolo 'str' foi declarado como uma função na tabela de símbolos (ST) ou se é igual a "output".
+	// Retorna 1 se a condição for verdadeira, e 0 caso contrário.
 	int check_declaration(char* str, char *check_type)
 	{
 		for(int i=0; i<1001; i++)
@@ -384,6 +425,8 @@
 		return 0;
 	}
 
+	// Verifica se o especificador de tipo 'type_specifier' é "void".
+	// Se for, exibe uma mensagem de erro e encerra o programa, indicando que parâmetros não podem ser do tipo void.
 	int check_params(char* type_specifier)
 	{
 		if(!strcmp(type_specifier, "void"))
@@ -394,6 +437,8 @@
 		return 0;
 	}
 
+	// Retorna o primeiro caractere do tipo do símbolo 's' na tabela de símbolos (ST).
+	// Se o símbolo não for encontrado, o comportamento é indefinido.
 	char gettype(char *s, int flag)
 	{
 			for(int i = 0 ; i < 1001 ; i++ )
@@ -406,6 +451,7 @@
 		
 	}
 
+	// Imprime a tabela de símbolos (ST) formatada, mostrando símbolo, classe, tipo, valor, número da linha, nível de aninhamento e contagem de parâmetros.
 	void printST()
 	{
 		printf("%10s | %15s | %10s | %10s | %10s | %15s | %10s |\n","SYMBOL", "CLASS", "TYPE","VALUE", "LINE NO", "NESTING", "PARAMS COUNT");
@@ -423,7 +469,7 @@
 		}
     }
 
-
+	// Imprime a tabela de constantes (CT) formatada, mostrando nome e tipo.
 	void printCT()
 	{
 		printf("%10s | %15s\n","NAME", "TYPE");
@@ -439,6 +485,8 @@
 			printf("%10s | %15s\n",CT[i].name, CT[i].type);
 		}
 	}
+
+	// Variáveis globais para armazenar o identificador atual, tipo e valor, respectivamente.
 	char curid[20];
 	char curtype[20];
 	char curval[20];
@@ -449,12 +497,21 @@ DE "define"
 IN "include"
 
 %%
+// Incrementa o contador de linha quando uma nova linha é encontrada.
 \n 	{yylineno++;}
+
+// Ignora diretivas de pré-processador e espaços.
 ([#][" "]*({IN})[ ]*([<]?)([A-Za-z]+)[.]?([A-Za-z]*)([>]?))/["\n"|\/|" "|"\t"]	{ }
 ([#][" "]*({DE})[" "]*([A-Za-z]+)(" ")*[0-9]+)/["\n"|\/|" "|"\t"]				{ } 
+
+// Ignora comentários de linha única.
 \/\/(.*)																		{ }
+
+// Ignora comentários de múltiplas linhas.
 \/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+\/										{ }
 [ \n\t] ;
+
+// Retorna o token correspondente ao lexema encontrado.
 ";"				{ return(';'); }
 ","				{ return(','); }
 ("{")			{ return('{'); }
@@ -466,6 +523,7 @@ IN "include"
 ":"				{ return(':'); }
 "."				{ return('.'); }
 
+// Identifica os tipos de dados e palavras-chave.
 "char"			{ strcpy(curtype,yytext); insertST(yytext, "Keyword");return CHAR;}
 "double"		{ strcpy(curtype,yytext); insertST(yytext, "Keyword"); return DOUBLE;}
 "else"			{ insertST(yytext, "Keyword"); return ELSE;}
@@ -486,7 +544,7 @@ IN "include"
 "break"			{ insertST(yytext, "Keyword");  return BREAK;}
 
 
-
+// Identifica os operadores.
 "++"			{ return increment_operator; }
 "--"			{ return decrement_operator; }
 "<<"			{ return leftshift_operator; }
@@ -521,6 +579,7 @@ IN "include"
 "|"				{ return pipe_operator; }
 \=				{ return assignment_operator;}
 
+// Constantes e identificadores.
 \"[^\n]*\"/[;|,|\)] 			{strcpy(curval,yytext); insertCT(yytext,"String Constant"); return string_constant;}
 \'[A-Z|a-z]\'/[;|,|\)|:] 		{strcpy(curval,yytext); insertCT(yytext,"Character Constant"); return character_constant;}
 [a-z|A-Z]([a-z|A-Z]|[0-9])*/\[ 	{strcpy(curid,yytext); insertST(yytext, "Array Identifier");  return array_identifier;}
@@ -528,6 +587,7 @@ IN "include"
 ([0-9]*)\.([0-9]+)/[;|,|" "|\)|<|>|=|\!|\||&|\+|\-|\*|\/|\%|~|\n|\t|\^] 	{strcpy(curval,yytext); insertCT(yytext, "Floating Constant"); return float_constant;}
 [A-Za-z_][A-Za-z_0-9]* {strcpy(curid,yytext); insertST(curid,"Identifier"); return identifier;}
 
+// Trata erros diversos, como diretivas de pré-processador malformadas, comentários não fechados, strings incompletas, etc.
 (.?) {
 		if(yytext[0]=='#')
 		{
