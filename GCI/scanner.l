@@ -577,24 +577,16 @@ IN "include"
 [A-Za-z_][A-Za-z_0-9]* {strcpy(curid,yytext); insertST(curid,"Identifier"); return identifier;}
 
 (.?) {
-		if(yytext[0]=='#')
-		{
-			printf("Error in Pre-Processor directive at line no. %d\n",yylineno);
-		}
-		else if(yytext[0]=='/')
-		{
-			printf("ERR_UNMATCHED_COMMENT at line no. %d\n",yylineno);
-		}
-		else if(yytext[0]=='"')
-		{
-			printf("ERR_INCOMPLETE_STRING at line no. %d\n",yylineno);
-		}
-		else
-		{
-			printf("ERROR at line no. %d\n",yylineno);
-		}
-		printf("%s\n", yytext);
-		return 0;
+	if(yytext[0]=='"')
+    {
+        printf("ERR_STRING_INCOMPLETA na linha número %d\n", yylineno);
+    }
+    else
+    {
+        printf("ERRO na linha número %d\n", yylineno);
+    }
+    printf("%s\n", yytext);
+    return 0;
 }
 
 %%

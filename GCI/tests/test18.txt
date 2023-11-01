@@ -4,7 +4,6 @@ float media(float a,float b,float c)
 }
 
 
-
 void main()
 {
 	float n1 = 10.0;
@@ -21,11 +20,7 @@ void main()
 		output("Reprovado\n");
 	}
 
+	char nome = "Joao";
 
 	//float m = media(n1,n2);
 }
-
-
-
-
-

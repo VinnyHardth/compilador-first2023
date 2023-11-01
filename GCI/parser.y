@@ -353,7 +353,7 @@ mutable
 						  if(check_id_is_func(curid))
 						  {printf("Function name used as Identifier\n"); exit(8);}
 			              if(!checkscope(curid))
-			              {printf("%s\n",curid);printf("Undeclared\n");exit(0);} 
+			              {printf("%s\n",curid);printf("Variável não declarada\n");exit(0);} 
 			              if(!checkarray(curid))
 			              {printf("%s\n",curid);printf("Array ID has no subscript\n");exit(0);}
 			              if(gettype(curid,0)=='i' || gettype(curid,1)== 'c')
@@ -361,7 +361,7 @@ mutable
 			              else
 			              $$ = -1;
 			              }
-			| array_identifier {if(!checkscope(curid)){printf("%s\n",curid);printf("Undeclared\n");exit(0);}} '[' expression ']' 
+			| array_identifier {if(!checkscope(curid)){printf("%s\n",curid);printf("Variável não declarada\n");exit(0);}} '[' expression ']' 
 			                   {if(gettype(curid,0)=='i' || gettype(curid,1)== 'c')
 			              		$$ = 1;
 			              		else
