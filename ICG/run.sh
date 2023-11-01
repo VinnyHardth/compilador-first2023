@@ -1,23 +1,21 @@
-#!/bin/bash
+AMARELO='\033[1;33m'
+SEM_COR='\033[0m'
 
-YELLOW='\033[1;33m'
-NOCOLOR='\033[0m'
-
-function run_single_test() {
+function executar_teste_unico() {
   flex scanner.l && bison -o y.tab.c -d parser.y && gcc y.tab.c lex.yy.c -w
-  local filename="$1"
-  if [ -f "$filename" ]; then
-    echo "Running: $filename"
-    ./a.out "$filename"
+  local nome_arquivo="$1"
+  if [ -f "$nome_arquivo" ]; then
+    echo "Executando: $nome_arquivo"
+    ./a.out "$nome_arquivo"
   else
-    echo "Test case file not found: $filename"
+    echo "Arquivo de caso de teste não encontrado: $nome_arquivo"
   fi
 }
 
 if [ "$#" -ne 1 ]; then
-  echo "Usage: $0 <test_case_file>"
+  echo "Uso: $0 <arquivo_de_caso_de_teste>"
   exit 1
 fi
 
-test_case_file="$1"
-run_single_test "$test_case_file"
+arquivo_de_caso_de_teste="$1"
+executar_teste_unico "$arquivo_de_caso_de_teste"
