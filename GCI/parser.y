@@ -3,19 +3,26 @@
 	#include <string.h>
 	#include <stdlib.h>
 	
+	/* Declaração de funções e variáveis utilizadas no analisador */
 	void yyerror(char* s);
 	int yylex();
 	void ins();
 	void insV();
 	int flag=0;
+
+	/* Definição de cores ANSI para formatação de texto no terminal */
 	#define ANSI_COLOR_RED		"\x1b[31m"
 	#define ANSI_COLOR_GREEN	"\x1b[32m"
 	#define ANSI_COLOR_CYAN		"\x1b[36m"
 	#define ANSI_COLOR_RESET	"\x1b[0m"
+
+	/* Variáveis externas utilizadas para armazenar informações sobre identificadores e tipos */
 	extern char curid[20];
 	extern char curtype[20];
 	extern char curval[20];
 	extern int currnest;
+
+	/* Declaração de funções para manipulação da tabela de símbolos e verificação de escopo */
 	void deletedata (int );
 	int checkscope(char*);
 	int check_id_is_func(char *);
@@ -28,9 +35,13 @@
 	int check_params(char*);
 	int duplicate(char *s);
 	int checkarray(char*);
+
+	/* Variáveis para armazenar informações sobre funções e chamadas de funções */
 	char currfunctype[100];
 	char currfunc[100];
 	char currfunccall[100];
+
+	/* Mais declarações de funções para geração de código e manipulação de pilha */
 	void insertSTF(char*);
 	char gettype(char*,int);
 	char getfirst(char*);
@@ -53,12 +64,14 @@
 	void arggen();
 	void callgen();
 
+	/* Variáveis para controle de parâmetros, chamadas de funções e controle de pilha */
 	int params_count=0;
 	int call_params_count=0;
 	int top = 0,count=0,ltop=0,lno=0;
 	char temp[3] = "t";
 %}
 
+/* Definições de tokens e operadores para o analisador sintático */
 %nonassoc IF
 %token INT CHAR FLOAT DOUBLE LONG SHORT SIGNED UNSIGNED STRUCT
 %token RETURN MAIN
@@ -71,15 +84,14 @@
 %token identifier array_identifier func_identifier
 %token integer_constant string_constant float_constant character_constant
 
+/* Definição de precedência de operadores */
 %nonassoc ELSE
-
 %right leftshift_assignment_operator rightshift_assignment_operator
 %right XOR_assignment_operator OR_assignment_operator
 %right AND_assignment_operator modulo_assignment_operator
 %right multiplication_assignment_operator division_assignment_operator
 %right addition_assignment_operator subtraction_assignment_operator
 %right assignment_operator
-
 %left OR_operator
 %left AND_operator
 %left pipe_operator
@@ -90,7 +102,6 @@
 %left leftshift_operator rightshift_operator 
 %left add_operator subtract_operator
 %left multiplication_operator division_operator modulo_operator
-
 %right SIZEOF
 %right tilde_operator exclamation_operator
 %left increment_operator decrement_operator 
@@ -99,6 +110,7 @@
 %start program
 
 %%
+/* Definição da gramática */
 program
 			: declaration_list;
 
@@ -405,27 +417,34 @@ constant
 
 %%
 
+/* Código C adicional para suporte ao analisador, incluindo funções auxiliares e a função main */
 extern FILE *yyin;
 extern int yylineno;
 extern char *yytext;
+
+/* Funções para manipulação da tabela de símbolos e tabela de constantes */
 void insertSTtype(char *,char *);
 void insertSTvalue(char *, char *);
 void incertCT(char *, char *);
 void printST();
 void printCT();
 
+/* Estrutura de dados para pilha e funções para manipulação da pilha */
 struct stack
 {
 	char value[100];
 	int labelvalue;
 }s[100],label[100];
 
+/* Funções para manipulação da pilha, geração de código e controle de fluxo */
 
+// Empilha uma string na pilha 's' e incrementa o topo da pilha.
 void push(char *x)
 {
 	strcpy(s[++top].value,x);
 }
 
+// Função para trocar os valores de duas variáveis.
 void swap(char *x, char *y)
 {
 	char temp = *x;
@@ -433,6 +452,7 @@ void swap(char *x, char *y)
 	*y = temp;
 }
 
+// Função para reverter uma string.
 void reverse(char str[], int length) 
 { 
     int start = 0; 
@@ -444,7 +464,8 @@ void reverse(char str[], int length)
         end--; 
     } 
 } 
-  
+
+// Função para converter um número inteiro em uma string, de acordo com a base especificada.
 char* itoa(int num, char* str, int base) 
 { 
     int i = 0; 
@@ -483,6 +504,7 @@ char* itoa(int num, char* str, int base)
     return str; 
 } 
 
+// Função para gerar código intermediário para operações binárias.
 void codegen()
 {
 	strcpy(temp,"t");
@@ -495,6 +517,7 @@ void codegen()
 	count++; 
 }
 
+// Função para gerar código intermediário para constantes.
 void codegencon()
 {
 	strcpy(temp,"t");
@@ -507,6 +530,7 @@ void codegencon()
 	
 }
 
+// Função para verificar se uma operação é unária.
 int isunary(char *s)
 {
 	if(strcmp(s, "--")==0 || strcmp(s, "++")==0)
@@ -516,6 +540,7 @@ int isunary(char *s)
 	return 0;
 }
 
+// Função para gerar código intermediário para operações unárias.
 void genunary()
 {
 	char temp1[100], temp2[100], temp3[100];
@@ -549,12 +574,14 @@ void genunary()
 	top = top -2;
 }
 
+// Função para gerar código intermediário para atribuições.
 void codeassign()
 {
 	printf("%s = %s\n",s[top-2].value,s[top].value);
 	top = top - 2;
 }
 
+// Função para gerar rótulos e código intermediário para estruturas de controle (IF).
 void label1()
 {
 	strcpy(temp,"L");
@@ -565,6 +592,7 @@ void label1()
 	label[++ltop].labelvalue = lno++;
 }
 
+// Função para gerar rótulos e código intermediário para estruturas de controle (GOTO).
 void label2()
 {
 	strcpy(temp,"L");
@@ -580,6 +608,7 @@ void label2()
 	label[++ltop].labelvalue=lno++;
 }
 
+// Função para gerar rótulos para o final de estruturas de controle.
 void label3()
 {
 	strcpy(temp,"L");
@@ -591,6 +620,7 @@ void label3()
 	
 }
 
+// Função para gerar rótulos para o início de estruturas de controle.
 void label4()
 {
 	strcpy(temp,"L");
@@ -601,7 +631,7 @@ void label4()
 	label[++ltop].labelvalue = lno++;
 }
 
-
+// Função para gerar rótulos e código intermediário para loops.
 void label5()
 {
 	strcpy(temp,"L");
@@ -618,11 +648,13 @@ void label5()
    
 }
 
+// Função para iniciar a geração de código de uma função.
 void funcgen()
 {
 	printf("func begin %s\n",currfunc);
 }
 
+// Função para finalizar a geração de código de uma função.
 void funcgenend()
 {
 	printf("func end\n\n");
@@ -640,6 +672,7 @@ void arggen(int i)
 	}
 }
 
+// Função para gerar código intermediário para argumentos de funções.
 void callgen()
 {
 	printf("refparam result\n");
@@ -649,43 +682,49 @@ void callgen()
 
 
 
+// Inicia a análise sintática do arquivo de entrada e imprime as tabelas de símbolos e constantes.
 int main(int argc , char **argv)
 {
-	yyin = fopen(argv[1], "r");
-	yyparse();
+    yyin = fopen(argv[1], "r"); // Abre o arquivo de entrada para leitura.
+    yyparse(); // Inicia a análise sintática.
 
-	if(flag == 0)
-	{
-		printf(ANSI_COLOR_GREEN "Status: Parsing Complete - Valid" ANSI_COLOR_RESET "\n");
-		printf("%30s" ANSI_COLOR_CYAN "SYMBOL TABLE" ANSI_COLOR_RESET "\n", " ");
-		printf("%30s %s\n", " ", "------------");
-		printST();
+    // Se a análise foi bem-sucedida, imprime as tabelas de símbolos e constantes.
+    if(flag == 0)
+    {
+        printf(ANSI_COLOR_GREEN "Status: Parsing Complete - Valid" ANSI_COLOR_RESET "\n");
+        printf("%30s" ANSI_COLOR_CYAN "SYMBOL TABLE" ANSI_COLOR_RESET "\n", " ");
+        printf("%30s %s\n", " ", "------------");
+        printST(); // Imprime a tabela de símbolos.
 
-		printf("\n\n%30s" ANSI_COLOR_CYAN "CONSTANT TABLE" ANSI_COLOR_RESET "\n", " ");
-		printf("%30s %s\n", " ", "--------------");
-		printCT();
-	}
+        printf("\n\n%30s" ANSI_COLOR_CYAN "CONSTANT TABLE" ANSI_COLOR_RESET "\n", " ");
+        printf("%30s %s\n", " ", "--------------");
+        printCT(); // Imprime a tabela de constantes.
+    }
 }
 
+// Função chamada quando um erro de análise é encontrado.
 void yyerror(char *s)
 {
-	printf(ANSI_COLOR_RED "%d %s %s\n", yylineno, s, yytext);
-	flag=1;
-	printf(ANSI_COLOR_RED "Status: Parsing Failed - Invalid\n" ANSI_COLOR_RESET);
-	exit(7);
+    printf(ANSI_COLOR_RED "%d %s %s\n", yylineno, s, yytext); // Imprime a mensagem de erro.
+    flag = 1; // Seta a flag de erro.
+    printf(ANSI_COLOR_RED "Status: Parsing Failed - Invalid\n" ANSI_COLOR_RESET);
+    exit(7); // Encerra o programa com código de erro.
 }
 
+// Função para inserir o tipo de um identificador na tabela de símbolos.
 void ins()
 {
-	insertSTtype(curid,curtype);
+    insertSTtype(curid,curtype);
 }
 
+// Função para inserir o valor de um identificador na tabela de símbolos.
 void insV()
 {
-	insertSTvalue(curid,curval);
+    insertSTvalue(curid,curval); 
 }
 
+// Função chamada no final da análise sintática.
 int yywrap()
 {
-	return 1;
+    return 1;
 }
