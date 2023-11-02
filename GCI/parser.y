@@ -131,8 +131,8 @@ variable_declaration_list
 			: variable_declaration_list ',' variable_declaration_identifier | variable_declaration_identifier;
 
 variable_declaration_identifier 
-			: identifier {if(duplicate(curid)){printf("Duplicado\n");exit(0);}insertSTnest(curid,currnest); ins();  } vdi   
-			  | array_identifier {if(duplicate(curid)){printf("Duplicado\n");exit(0);}insertSTnest(curid,currnest); ins();  } vdi;
+			: identifier {if(isDuplicate(curid)){printf("Duplicado\n");exit(0);}addToSymbolTableWithNest(curid,currnest); insertSymbol();  } vdi   
+			  | array_identifier {if(isDuplicate(curid)){printf("Duplicado\n");exit(0);}addToSymbolTableWithNest(curid,currnest); insertSymbol();  } vdi;
 			
 			
 
@@ -266,28 +266,28 @@ expression
 			                                                          } 
 			                                                          else 
 			                                                          {$$=-1; printf("Desconformidade de tipos\n"); exit(0);} 
-			                                                          codeassign();
+			                                                          generateAssignmentCode();
 			                                                       }
 			| mutable addition_assignment_operator {pushToStack("+=");}expression {  
 																	  if($1==1 && $4==1) 
 			                                                          $$=1; 
 			                                                          else 
 			                                                          {$$=-1; printf("Desconformidade de tipos\n"); exit(0);} 
-			                                                          codeassign();
+			                                                          generateAssignmentCode();
 			                                                       }
 			| mutable subtraction_assignment_operator {pushToStack("-=");} expression  {	  
 																	  if($1==1 && $4==1) 
 			                                                          $$=1; 
 			                                                          else 
 			                                                          {$$=-1; printf("Desconformidade de tipos\n"); exit(0);} 
-			                                                          codeassign();
+			                                                          generateAssignmentCode();
 			                                                       }
 			| mutable multiplication_assignment_operator {pushToStack("*=");} expression {
 																	  if($1==1 && $4==1) 
 			                                                          $$=1; 
 			                                                          else 
 			                                                          {$$=-1; printf("Desconformidade de tipos\n"); exit(0);}
-			                                                          codeassign(); 
+			                                                          generateAssignmentCode(); 
 			                                                       }
 			| mutable division_assignment_operator {pushToStack("/=");}expression 		{ 
 																	  if($1==1 && $4==1) 
@@ -300,7 +300,7 @@ expression
 			                                                          $$=1; 
 			                                                          else 
 			                                                          {$$=-1; printf("Desconformidade de tipos\n"); exit(0);} 
-			                                                          codeassign();
+			                                                          generateAssignmentCode();
 																	}
 			| mutable increment_operator 							{ pushToStack("++");if($1 == 1) $$=1; else $$=-1; generateUnaryOperation();}
 			| mutable decrement_operator  							{pushToStack("--");if($1 == 1) $$=1; else $$=-1;}
@@ -348,14 +348,14 @@ factor
 
 mutable 
 			: identifier {
-						  push(curid);
-						  if(check_id_is_func(curid))
+						  pushToStack(curid);
+						  if(isIdentifierFunction(curid))
 						  {printf("Erro: Nome da função usado como identificador\n"); exit(8);}
-			              if(!checkscope(curid))
+			              if(!verifyScope(curid))
 			              {printf("%s\n",curid);printf("\nErro: Variável não declarada\n");exit(0);} 
-			              if(!checkarray(curid))
+			              if(!isArray(curid))
 			              {printf("%s\n",curid);printf("Erro: O identificador de array não possui subscrito\n");exit(0);}
-			              if(gettype(curid,0)=='i' || gettype(curid,1)== 'c')
+			              if(getType(curid,0)=='i' || getType(curid,1)== 'c')
 			              $$ = 1;
 			              else
 			              $$ = -1;
@@ -375,9 +375,9 @@ immutable
 call
 			: identifier '('{
 
-			             if(!check_declaration(curid, "Function"))
+			             if(!verifyDeclaration(curid, "Function"))
 			             { printf("Erro: Função não declarada"); exit(0);} 
-			             insertSTF(curid); 
+			             addToFunctionSymbolTable(curid); 
 						 strcpy(currfunccall,curid);
 						 if(getType(curid,0)=='i' || getType(curid,1)== 'c')
 						 {
