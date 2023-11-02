@@ -4,7 +4,7 @@
 #include<stdlib.h>
 #include<ctype.h>
 #include<stdbool.h>
-#include "../hash/hash.h"
+#include "hash/hash.h"
 
 int linha_atual = 0; // variável global para percorrer a linha
 FILE *docLex, *file; // ponteiro para o arquivo de saída e para o arquivo de entrada
