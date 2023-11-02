@@ -392,7 +392,7 @@ call
 							{ 
 								if(getParamsCountFromSymbolTable(currfunccall)!=call_params_count)
 								{	
-									yyerror("Number of arguments in function call doesn't match number of parameters");
+									yyerror("Número de parâmetros incorreto");
 									exit(8);
 								}
 							}
