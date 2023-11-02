@@ -73,7 +73,7 @@
 
 /* Definições de tokens e operadores para o analisador sintático */
 %nonassoc IF
-%token INT CHAR FLOAT DOUBLE LONG SHORT SIGNED UNSIGNED STRUCT
+%token INT CHAR REAL DOUBLE LONG SHORT SIGNED UNSIGNED STRUCT
 %token RETURN MAIN
 %token VOID
 %token WHILE FOR DO 
@@ -82,7 +82,7 @@
 %expect 1
 
 %token identifier array_identifier func_identifier
-%token integer_constant string_constant float_constant character_constant
+%token integer_constant string_constant real_constant character_constant
 
 /* Definição de precedência de operadores */
 %nonassoc ELSE
@@ -153,7 +153,7 @@ initilization
 			| ;
 
 type_specifier 
-			: INT | CHAR | FLOAT  | DOUBLE  
+			: INT | CHAR | REAL | DOUBLE  
 			| LONG long_grammar 
 			| SHORT short_grammar
 			| UNSIGNED unsigned_grammar 
@@ -407,12 +407,12 @@ arguments_list
 			: arguments_list ',' exp { call_params_count++; }  
 			| exp { call_params_count++; };
 
-exp : identifier {arggen(1);} | integer_constant {arggen(2);} | string_constant {arggen(3);} | float_constant {arggen(4);} | character_constant {arggen(5);} ;
+exp : identifier {arggen(1);} | integer_constant {arggen(2);} | string_constant {arggen(3);} | real_constant {arggen(4);} | character_constant {arggen(5);} ;
 
 constant 
 			: integer_constant 	{  insV(); codegencon(); $$=1; } 
 			| string_constant	{  insV(); codegencon();$$=-1;} 
-			| float_constant	{  insV(); codegencon();} 
+			| real_constant	{  insV(); codegencon();} 
 			| character_constant{  insV(); codegencon();$$=1; };
 
 %%

@@ -1,4 +1,4 @@
-float media(float a,float b,float c)
+real media(real a,real b,real c)
 {
 	return (a+b+c)/3.0;
 }
@@ -6,9 +6,9 @@ float media(float a,float b,float c)
 
 void main()
 {
-	float n1 = 10.0;
-	float n2 = 8.5;
-	float n3 = 5.4;
+	real n1 = 10.0;
+	real n2 = 8.5;
+	real n3 = 5.4;
 	int m = media(n1,n2, n3);
 
 	if (m > 6)
@@ -22,5 +22,5 @@ void main()
 
 	char nome = "Joao";
 
-	//float m = media(n1,n2);
+	//real m = media(n1,n2);
 }

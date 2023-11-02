@@ -517,7 +517,7 @@ IN "include"
 "char"			{ strcpy(curtype,yytext); insertST(yytext, "Keyword");return CHAR;}
 "double"		{ strcpy(curtype,yytext); insertST(yytext, "Keyword"); return DOUBLE;}
 "else"			{ insertST(yytext, "Keyword"); return ELSE;}
-"float"			{ strcpy(curtype,yytext); insertST(yytext, "Keyword"); return FLOAT;}
+"real"			{ strcpy(curtype,yytext); insertST(yytext, "Keyword"); return REAL;}
 "while"			{ insertST(yytext, "Keyword"); return WHILE;}
 "do"			{ insertST(yytext, "Keyword"); return DO;}
 "for"			{ insertST(yytext, "Keyword"); return FOR;}
@@ -573,7 +573,7 @@ IN "include"
 \'[A-Z|a-z]\'/[;|,|\)|:] 		{strcpy(curval,yytext); insertCT(yytext,"Character Constant"); return character_constant;}
 [a-z|A-Z]([a-z|A-Z]|[0-9])*/\[ 	{strcpy(curid,yytext); insertST(yytext, "Array Identifier");  return array_identifier;}
 [1-9][0-9]*|0/[;|,|" "|\)|<|>|=|\!|\||&|\+|\-|\*|\/|\%|~|\]|\}|:|\n|\t|\^] 	{strcpy(curval,yytext); insertCT(yytext, "Number Constant"); yylval = atoi(yytext); return integer_constant;}
-([0-9]*)\.([0-9]+)/[;|,|" "|\)|<|>|=|\!|\||&|\+|\-|\*|\/|\%|~|\n|\t|\^] 	{strcpy(curval,yytext); insertCT(yytext, "Floating Constant"); return float_constant;}
+([0-9]*)\.([0-9]+)/[;|,|" "|\)|<|>|=|\!|\||&|\+|\-|\*|\/|\%|~|\n|\t|\^] 	{strcpy(curval,yytext); insertCT(yytext, "real Constant"); return real_constant;}
 [A-Za-z_][A-Za-z_0-9]* {strcpy(curid,yytext); insertST(curid,"Identifier"); return identifier;}
 
 (.?) {
