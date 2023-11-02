@@ -472,7 +472,7 @@
 	// Imprime a tabela de constantes (CT) formatada, mostrando nome e tipo.
 	void printCT()
 	{
-		printf("%10s | %15s\n","NOME", "TIPO");
+		printf("%15s | %15s\n","NOME", "TIPO");
 		for(int i=0;i<81;i++) {
 			printf("-");
 		}
@@ -482,7 +482,7 @@
 			if(CT[i].length == 0)
 				continue;
 
-			printf("%10s | %15s\n",CT[i].name, CT[i].type);
+			printf("%15s | %15s\n",CT[i].name, CT[i].type);
 		}
 	}
 
@@ -573,7 +573,7 @@ IN "include"
 \'[A-Z|a-z]\'/[;|,|\)|:] 		{strcpy(curval,yytext); insertCT(yytext,"Character Constant"); return character_constant;}
 [a-z|A-Z]([a-z|A-Z]|[0-9])*/\[ 	{strcpy(curid,yytext); insertST(yytext, "Array Identifier");  return array_identifier;}
 [1-9][0-9]*|0/[;|,|" "|\)|<|>|=|\!|\||&|\+|\-|\*|\/|\%|~|\]|\}|:|\n|\t|\^] 	{strcpy(curval,yytext); insertCT(yytext, "Number Constant"); yylval = atoi(yytext); return integer_constant;}
-([0-9]*)\.([0-9]+)/[;|,|" "|\)|<|>|=|\!|\||&|\+|\-|\*|\/|\%|~|\n|\t|\^] 	{strcpy(curval,yytext); insertCT(yytext, "real Constant"); return real_constant;}
+([0-9]*)\.([0-9]+)/[;|,|" "|\)|<|>|=|\!|\||&|\+|\-|\*|\/|\%|~|\n|\t|\^] 	{strcpy(curval,yytext); insertCT(yytext, "Real Constant"); return real_constant;}
 [A-Za-z_][A-Za-z_0-9]* {strcpy(curid,yytext); insertST(curid,"Identifier"); return identifier;}
 
 (.?) {

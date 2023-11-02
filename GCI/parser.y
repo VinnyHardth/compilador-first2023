@@ -132,8 +132,8 @@ variable_declaration_list
 			: variable_declaration_list ',' variable_declaration_identifier | variable_declaration_identifier;
 
 variable_declaration_identifier 
-			: identifier {if(duplicate(curid)){printf("Duplicate\n");exit(0);}insertSTnest(curid,currnest); ins();  } vdi   
-			  | array_identifier {if(duplicate(curid)){printf("Duplicate\n");exit(0);}insertSTnest(curid,currnest); ins();  } vdi;
+			: identifier {if(duplicate(curid)){printf("Duplicado\n");exit(0);}insertSTnest(curid,currnest); ins();  } vdi   
+			  | array_identifier {if(duplicate(curid)){printf("Duplicado\n");exit(0);}insertSTnest(curid,currnest); ins();  } vdi;
 			
 			
 
@@ -144,7 +144,7 @@ identifier_array_type
 			| ;
 
 initilization_params
-			: integer_constant ']' initilization {if($$ < 1) {printf("Wrong array size\n"); exit(0);} }
+			: integer_constant ']' initilization {if($$ < 1) {printf("Tamanho de vetor errado\n"); exit(0);} }
 			| ']' string_initilization;
 
 initilization
@@ -219,18 +219,18 @@ expression_statment
 			| ';' ;
 
 conditional_statements 
-			: IF '(' simple_expression ')' {label1();if($3!=1){printf("Condition checking is not of type int\n");exit(0);}} statement {label2();}  conditional_statements_breakup;
+			: IF '(' simple_expression ')' {label1();if($3!=1){printf("A condição de verificação não é do tipo int\n");exit(0);}} statement {label2();}  conditional_statements_breakup;
 
 conditional_statements_breakup
 			: ELSE statement {label3();}
 			| {label3();};
 
 iterative_statements 
-			: WHILE '(' {label4();} simple_expression ')' {label1();if($4!=1){printf("Condition checking is not of type int\n");exit(0);}} statement {label5();} 
-			| FOR '(' expression ';' {label4();} simple_expression ';' {label1();if($6!=1){printf("Condition checking is not of type int\n");exit(0);}} expression ')'statement {label5();} 
-			| {label4();}DO statement WHILE '(' simple_expression ')'{label1();label5();if($6!=1){printf("Condition checking is not of type int\n");exit(0);}} ';';
+			: WHILE '(' {label4();} simple_expression ')' {label1();if($4!=1){printf("A condição de verificação não é do tipo int\n");exit(0);}} statement {label5();} 
+			| FOR '(' expression ';' {label4();} simple_expression ';' {label1();if($6!=1){printf("A condição de verificação não é do tipo int\n");exit(0);}} expression ')'statement {label5();} 
+			| {label4();}DO statement WHILE '(' simple_expression ')'{label1();label5();if($6!=1){printf("A condição de verificação não é do tipo int\n");exit(0);}} ';';
 return_statement 
-			: RETURN ';' {if(strcmp(currfunctype,"void")) {printf("Returning void of a non-void function\n"); exit(0);}}
+			: RETURN ';' {if(strcmp(currfunctype,"void")) {printf("Retornando void de uma função não-void\n"); exit(0);}}
 			| RETURN expression ';' { 	if(!strcmp(currfunctype, "void"))
 										{ 
 											yyerror("Function is void");
@@ -238,7 +238,7 @@ return_statement
 
 										if((currfunctype[0]=='i' || currfunctype[0]=='c') && $2!=1)
 										{
-											printf("Expression doesn't match return type of function\n"); exit(0);
+											printf("A expressão não corresponde ao tipo de retorno da função\n"); exit(0);
 										}
 
 									};
@@ -266,41 +266,41 @@ expression
 			                                                          $$=1;
 			                                                          } 
 			                                                          else 
-			                                                          {$$=-1; printf("Type mismatch\n"); exit(0);} 
+			                                                          {$$=-1; printf("Desconformidade de tipos\n"); exit(0);} 
 			                                                          codeassign();
 			                                                       }
 			| mutable addition_assignment_operator {push("+=");}expression {  
 																	  if($1==1 && $4==1) 
 			                                                          $$=1; 
 			                                                          else 
-			                                                          {$$=-1; printf("Type mismatch\n"); exit(0);} 
+			                                                          {$$=-1; printf("Desconformidade de tipos\n"); exit(0);} 
 			                                                          codeassign();
 			                                                       }
 			| mutable subtraction_assignment_operator {push("-=");} expression  {	  
 																	  if($1==1 && $4==1) 
 			                                                          $$=1; 
 			                                                          else 
-			                                                          {$$=-1; printf("Type mismatch\n"); exit(0);} 
+			                                                          {$$=-1; printf("Desconformidade de tipos\n"); exit(0);} 
 			                                                          codeassign();
 			                                                       }
 			| mutable multiplication_assignment_operator {push("*=");} expression {
 																	  if($1==1 && $4==1) 
 			                                                          $$=1; 
 			                                                          else 
-			                                                          {$$=-1; printf("Type mismatch\n"); exit(0);}
+			                                                          {$$=-1; printf("Desconformidade de tipos\n"); exit(0);}
 			                                                          codeassign(); 
 			                                                       }
 			| mutable division_assignment_operator {push("/=");}expression 		{ 
 																	  if($1==1 && $4==1) 
 			                                                          $$=1; 
 			                                                          else 
-			                                                          {$$=-1; printf("Type mismatch\n"); exit(0);} 
+			                                                          {$$=-1; printf("Desconformidade de tipos\n"); exit(0);} 
 			                                                       }
 			| mutable modulo_assignment_operator {push("%=");}expression 		{ 
 																	  if($1==1 && $3==1) 
 			                                                          $$=1; 
 			                                                          else 
-			                                                          {$$=-1; printf("Type mismatch\n"); exit(0);} 
+			                                                          {$$=-1; printf("Desconformidade de tipos\n"); exit(0);} 
 			                                                          codeassign();
 																	}
 			| mutable increment_operator 							{ push("++");if($1 == 1) $$=1; else $$=-1; genunary();}
@@ -351,11 +351,11 @@ mutable
 			: identifier {
 						  push(curid);
 						  if(check_id_is_func(curid))
-						  {printf("Function name used as Identifier\n"); exit(8);}
+						  {printf("Erro: Nome da função usado como identificador\n"); exit(8);}
 			              if(!checkscope(curid))
 			              {printf("%s\n",curid);printf("\nErro: Variável não declarada\n");exit(0);} 
 			              if(!checkarray(curid))
-			              {printf("%s\n",curid);printf("Array ID has no subscript\n");exit(0);}
+			              {printf("%s\n",curid);printf("Erro: O identificador de array não possui subscrito\n");exit(0);}
 			              if(gettype(curid,0)=='i' || gettype(curid,1)== 'c')
 			              $$ = 1;
 			              else
@@ -377,7 +377,7 @@ call
 			: identifier '('{
 
 			             if(!check_declaration(curid, "Function"))
-			             { printf("Function not declared"); exit(0);} 
+			             { printf("Erro: Função não declarada"); exit(0);} 
 			             insertSTF(curid); 
 						 strcpy(currfunccall,curid);
 						 if(gettype(curid,0)=='i' || gettype(curid,1)== 'c')
