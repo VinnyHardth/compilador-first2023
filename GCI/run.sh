@@ -7,7 +7,7 @@ function cleanup() {
 trap cleanup EXIT
 
 function executar_teste_unico() {
-  flex sintatico.l && bison -o y.tab.c -d lexico.y && gcc y.tab.c lex.yy.c -w
+  flex lexico.l && bison -o y.tab.c -d sintatico.y && gcc y.tab.c lex.yy.c -w
   local nome_arquivo="$1"
   if [ -f "$nome_arquivo" ]; then
     echo "Executando: $nome_arquivo"

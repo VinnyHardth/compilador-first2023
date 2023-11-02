@@ -173,7 +173,7 @@ int hash(char *str)
     return value;
 }
 
-	// Insere um novo símbolo na tabela de constantes (CT) com o nome 'str1' e o tipo 'str2'.
+// Insere um novo símbolo na tabela de constantes (CT) com o nome 'str1' e o tipo 'str2'.
 // Se o símbolo já existir, a função retorna sem fazer alterações.
 // Se não, o símbolo é inserido na tabela.
 void insertCT(char *str1, char *str2)
@@ -300,7 +300,7 @@ void insertSTvalue(char *str1, char *str2)
     }
 }
 
-	// Variáveis globais para armazenar o identificador atual, tipo e valor, respectivamente.
+// Variáveis globais para armazenar o identificador atual, tipo e valor, respectivamente.
 char curid[20];
 char curtype[20];
 char curval[20];
@@ -487,6 +487,8 @@ void deleteSymbolData (int nesting)
 }
 
 %}
+
+/* Regras para o analisador léxico */
 
 %%
 \n 	{yylineno++;}
