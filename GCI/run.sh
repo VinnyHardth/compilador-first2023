@@ -4,6 +4,8 @@ function executar_teste_unico() {
   if [ -f "$nome_arquivo" ]; then
     echo "Executando: $nome_arquivo"
     ./a.out "$nome_arquivo"
+    # Remover os arquivos gerados automaticamente após a execução
+    rm -f y.tab.c y.tab.h lex.yy.c a.out
   else
     echo "Arquivo de caso de teste não encontrado: $nome_arquivo"
   fi
