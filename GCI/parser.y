@@ -1,78 +1,77 @@
 %{
-	#include <stdio.h>
-	#include <string.h>
 	#include <stdlib.h>
-	
-	/* Declaração de funções e variáveis utilizadas no analisador */
-	void yyerror(char* s);
-	int yylex();
-	void ins();
-	void insV();
-	int flag=0;
-
-	/* Definição de cores ANSI para formatação de texto no terminal */
-	#define ANSI_COLOR_RED		"\x1b[31m"
-	#define ANSI_COLOR_GREEN	"\x1b[32m"
-	#define ANSI_COLOR_CYAN		"\x1b[36m"
-	#define ANSI_COLOR_RESET	"\x1b[0m"
-
-	/* Variáveis externas utilizadas para armazenar informações sobre identificadores e tipos */
-	extern char curid[20];
-	extern char curtype[20];
-	extern char curval[20];
-	extern int currnest;
-
-	/* Declaração de funções para manipulação da tabela de símbolos e verificação de escopo */
-	void deletedata (int );
-	int checkscope(char*);
-	int check_id_is_func(char *);
-	void insertST(char*, char*);
-	void insertSTnest(char*, int);
-	void insertSTparamscount(char*, int);
-	int getSTparamscount(char*);
-	int check_duplicate(char*);
-	int check_declaration(char*, char *);
-	int check_params(char*);
-	int duplicate(char *s);
-	int checkarray(char*);
-
-	/* Variáveis para armazenar informações sobre funções e chamadas de funções */
-	char currfunctype[100];
-	char currfunc[100];
-	char currfunccall[100];
-
-	/* Mais declarações de funções para geração de código e manipulação de pilha */
-	void insertSTF(char*);
-	char gettype(char*,int);
-	char getfirst(char*);
-	void push(char *s);
-	void codegen();
-	void codeassign();
-	char* itoa(int num, char* str, int base);
-	void reverse(char str[], int length); 
-	void swap(char*,char*);
-	void label1();
-	void label2();
-	void label3();
-	void label4();
-	void label5();
-	void label6();
-	void genunary();
-	void codegencon();
-	void funcgen();
-	void funcgenend();
-	void arggen();
-	void callgen();
+	#include <string.h>
+	#include <stdio.h>
 
 	/* Variáveis para controle de parâmetros, chamadas de funções e controle de pilha */
 	int params_count=0;
 	int call_params_count=0;
 	int top = 0,count=0,ltop=0,lno=0;
 	char temp[3] = "t";
+
+	/* Declaração de funções e variáveis utilizadas no analisador */
+	int yylex();
+	void yyerror(char* s);
+	void insertSymbol();
+	void insertValue();
+	int flag=0;
+
+	/* Definição de cores ANSI para formatação de texto no terminal */
+	#define ANSI_COLOR_GREEN	"\x1b[32m"
+	#define ANSI_COLOR_RED		"\x1b[31m"
+	#define ANSI_COLOR_RESET	"\x1b[0m"
+	#define ANSI_COLOR_CYAN		"\x1b[36m"
+
+	/* Variáveis externas utilizadas para armazenar informações sobre identificadores e tipos */
+	extern int currnest;
+	extern char curval[20];
+	extern char curtype[20];
+	extern char curid[20];
+
+	/* Declaração de funções para manipulação da tabela de símbolos e verificação de escopo */
+	int verifyScope(char*);
+	void deleteSymbolData (int );
+	int isIdentifierFunction(char *);
+	void addToSymbolTable(char*, char*);
+	void addToSymbolTableWithNest(char*, int);
+	int verifyDuplicate(char*);
+	int verifyDeclaration(char*, char *);
+	int getParamsCountFromSymbolTable(char*);
+	void addParamsCountToSymbolTable(char*, int);
+	int verifyParameters(char*);
+	int isArray(char*);
+	int isDuplicate(char *s);
+
+	/* Variáveis para armazenar informações sobre funções e chamadas de funções */
+	char currfunc[100];
+	char currfunctype[100];
+	char currfunccall[100];
+
+	/* Mais declarações de funções para geração de código e manipulação de pilha */
+	void generateCodeIntermediate();
+	void addToFunctionSymbolTable(char*);
+	char getType(char*,int);
+	char getFirstElement(char*);
+	void pushToStack(char *s);
+	void generateAssignmentCode();
+	char* integerToString(int num, char* str, int base);
+	void reverseString(char str[], int length); 
+	void swapCharacters(char*,char*);
+	void label1();
+	void label2();
+	void label3();
+	void label4();
+	void label5();
+	void label6();
+	void generateUnaryOperation();
+	void generateConstantCode();
+	void startFunctionGeneration();
+	void endFunctionGeneration();
+	void generateArgument();
+	void generateFunctionCall();
 %}
 
 /* Definições de tokens e operadores para o analisador sintático */
-%nonassoc IF
 %token INT CHAR REAL DOUBLE LONG SHORT SIGNED UNSIGNED STRUCT
 %token RETURN MAIN
 %token VOID
@@ -86,26 +85,26 @@
 
 /* Definição de precedência de operadores */
 %nonassoc ELSE
-%right leftshift_assignment_operator rightshift_assignment_operator
-%right XOR_assignment_operator OR_assignment_operator
-%right AND_assignment_operator modulo_assignment_operator
-%right multiplication_assignment_operator division_assignment_operator
 %right addition_assignment_operator subtraction_assignment_operator
+%right multiplication_assignment_operator division_assignment_operator
+%right modulo_assignment_operator AND_assignment_operator
+%right OR_assignment_operator XOR_assignment_operator
+%right leftshift_assignment_operator rightshift_assignment_operator
 %right assignment_operator
 %left OR_operator
 %left AND_operator
-%left pipe_operator
-%left caret_operator
-%left amp_operator
 %left equality_operator inequality_operator
-%left lessthan_assignment_operator lessthan_operator greaterthan_assignment_operator greaterthan_operator
-%left leftshift_operator rightshift_operator 
+%left lessthan_operator greaterthan_operator lessthan_assignment_operator greaterthan_assignment_operator
+%left leftshift_operator rightshift_operator
 %left add_operator subtract_operator
 %left multiplication_operator division_operator modulo_operator
 %right SIZEOF
 %right tilde_operator exclamation_operator
-%left increment_operator decrement_operator 
-
+%left increment_operator decrement_operator
+%left pipe_operator
+%left caret_operator
+%left amp_operator
+%nonassoc IF
 
 %start program
 
@@ -176,16 +175,16 @@ function_declaration
 			: function_declaration_type function_declaration_param_statement;
 
 function_declaration_type
-			: type_specifier identifier '('  { strcpy(currfunctype, curtype); strcpy(currfunc, curid); check_duplicate(curid); insertSTF(curid); ins(); };
+			: type_specifier identifier '('  { strcpy(currfunctype, curtype); strcpy(currfunc, curid); verifyDuplicate(curid); addToFunctionSymbolTable(curid); insertSymbol(); };
 
 function_declaration_param_statement
-			: {params_count=0;}params ')' {funcgen();} statement {funcgenend();};
+			: {params_count=0;}params ')' {startFunctionGeneration();} statement {endFunctionGeneration();};
 
 params 
-			: parameters_list { insertSTparamscount(currfunc, params_count); }| { insertSTparamscount(currfunc, params_count); };
+			: parameters_list { addParamsCountToSymbolTable(currfunc, params_count); }| { addParamsCountToSymbolTable(currfunc, params_count); };
 
 parameters_list 
-			: type_specifier { check_params(curtype);} parameters_identifier_list ;
+			: type_specifier { verifyParameters(curtype);} parameters_identifier_list ;
 
 parameters_identifier_list 
 			: param_identifier parameters_identifier_list_breakup;
@@ -195,7 +194,7 @@ parameters_identifier_list_breakup
 			| ;
 
 param_identifier 
-			: identifier { ins();insertSTnest(curid,1); params_count++; } param_identifier_breakup;
+			: identifier { insertSymbol();addToSymbolTableWithNest(curid,1); params_count++; } param_identifier_breakup;
 
 param_identifier_breakup
 			: '[' ']'
@@ -208,7 +207,7 @@ statement
 			| variable_declaration;
 
 compound_statement 
-			: {currnest++;} '{'  statment_list  '}' {deletedata(currnest);currnest--;}  ;
+			: {currnest++;} '{'  statment_list  '}' {deleteSymbolData(currnest);currnest--;}  ;
 
 statment_list 
 			: statement statment_list 
@@ -247,7 +246,7 @@ break_statement
 			: BREAK ';' ;
 
 string_initilization
-			: assignment_operator string_constant {insV();} ;
+			: assignment_operator string_constant {insertValue();} ;
 
 array_initialization
 			: assignment_operator '{' array_int_declarations '}';
@@ -260,7 +259,7 @@ array_int_declarations_breakup
 			| ;
 
 expression 
-			: mutable assignment_operator {push("=");} expression   {   
+			: mutable assignment_operator {pushToStack("=");} expression   {   
 																	  if($1==1 && $4==1) 
 																	  {
 			                                                          $$=1;
@@ -269,79 +268,79 @@ expression
 			                                                          {$$=-1; printf("Desconformidade de tipos\n"); exit(0);} 
 			                                                          codeassign();
 			                                                       }
-			| mutable addition_assignment_operator {push("+=");}expression {  
+			| mutable addition_assignment_operator {pushToStack("+=");}expression {  
 																	  if($1==1 && $4==1) 
 			                                                          $$=1; 
 			                                                          else 
 			                                                          {$$=-1; printf("Desconformidade de tipos\n"); exit(0);} 
 			                                                          codeassign();
 			                                                       }
-			| mutable subtraction_assignment_operator {push("-=");} expression  {	  
+			| mutable subtraction_assignment_operator {pushToStack("-=");} expression  {	  
 																	  if($1==1 && $4==1) 
 			                                                          $$=1; 
 			                                                          else 
 			                                                          {$$=-1; printf("Desconformidade de tipos\n"); exit(0);} 
 			                                                          codeassign();
 			                                                       }
-			| mutable multiplication_assignment_operator {push("*=");} expression {
+			| mutable multiplication_assignment_operator {pushToStack("*=");} expression {
 																	  if($1==1 && $4==1) 
 			                                                          $$=1; 
 			                                                          else 
 			                                                          {$$=-1; printf("Desconformidade de tipos\n"); exit(0);}
 			                                                          codeassign(); 
 			                                                       }
-			| mutable division_assignment_operator {push("/=");}expression 		{ 
+			| mutable division_assignment_operator {pushToStack("/=");}expression 		{ 
 																	  if($1==1 && $4==1) 
 			                                                          $$=1; 
 			                                                          else 
 			                                                          {$$=-1; printf("Desconformidade de tipos\n"); exit(0);} 
 			                                                       }
-			| mutable modulo_assignment_operator {push("%=");}expression 		{ 
+			| mutable modulo_assignment_operator {pushToStack("%=");}expression 		{ 
 																	  if($1==1 && $3==1) 
 			                                                          $$=1; 
 			                                                          else 
 			                                                          {$$=-1; printf("Desconformidade de tipos\n"); exit(0);} 
 			                                                          codeassign();
 																	}
-			| mutable increment_operator 							{ push("++");if($1 == 1) $$=1; else $$=-1; genunary();}
-			| mutable decrement_operator  							{push("--");if($1 == 1) $$=1; else $$=-1;}
+			| mutable increment_operator 							{ pushToStack("++");if($1 == 1) $$=1; else $$=-1; generateUnaryOperation();}
+			| mutable decrement_operator  							{pushToStack("--");if($1 == 1) $$=1; else $$=-1;}
 			| simple_expression {if($1 == 1) $$=1; else $$=-1;} ;
 
 
 simple_expression 
-			: simple_expression OR_operator and_expression {push("||");} {if($1 == 1 && $3==1) $$=1; else $$=-1; codegen();}
+			: simple_expression OR_operator and_expression {pushToStack("||");} {if($1 == 1 && $3==1) $$=1; else $$=-1; generateCodeIntermedi();}
 			| and_expression {if($1 == 1) $$=1; else $$=-1;};
 
 and_expression 
-			: and_expression AND_operator {push("&&");} unary_relation_expression  {if($1 == 1 && $3==1) $$=1; else $$=-1; codegen();}
+			: and_expression AND_operator {pushToStack("&&");} unary_relation_expression  {if($1 == 1 && $3==1) $$=1; else $$=-1; generateCodeIntermedi();}
 			  |unary_relation_expression {if($1 == 1) $$=1; else $$=-1;} ;
 
 
 unary_relation_expression 
-			: exclamation_operator {push("!");} unary_relation_expression {if($2==1) $$=1; else $$=-1; codegen();} 
+			: exclamation_operator {pushToStack("!");} unary_relation_expression {if($2==1) $$=1; else $$=-1; generateCodeIntermedi();} 
 			| regular_expression {if($1 == 1) $$=1; else $$=-1;} ;
 
 regular_expression 
-			: regular_expression relational_operators sum_expression {if($1 == 1 && $3==1) $$=1; else $$=-1; codegen();}
+			: regular_expression relational_operators sum_expression {if($1 == 1 && $3==1) $$=1; else $$=-1; generateCodeIntermedi();}
 			  | sum_expression {if($1 == 1) $$=1; else $$=-1;} ;
 			
 relational_operators 
-			: greaterthan_assignment_operator {push(">=");} | lessthan_assignment_operator {push("<=");} | greaterthan_operator {push(">");}| lessthan_operator {push("<");}| equality_operator {push("==");}| inequality_operator {push("!=");} ;
+			: greaterthan_assignment_operator {pushToStack(">=");} | lessthan_assignment_operator {pushToStack("<=");} | greaterthan_operator {pushToStack(">");}| lessthan_operator {pushToStack("<");}| equality_operator {pushToStack("==");}| inequality_operator {pushToStack("!=");} ;
 
 sum_expression 
-			: sum_expression sum_operators term  {if($1 == 1 && $3==1) $$=1; else $$=-1; codegen();}
+			: sum_expression sum_operators term  {if($1 == 1 && $3==1) $$=1; else $$=-1; generateCodeIntermedi();}
 			| term {if($1 == 1) $$=1; else $$=-1;};
 
 sum_operators 
-			: add_operator {push("+");}
-			| subtract_operator {push("-");} ;
+			: add_operator {pushToStack("+");}
+			| subtract_operator {pushToStack("-");} ;
 
 term
-			: term MULOP factor {if($1 == 1 && $3==1) $$=1; else $$=-1; codegen();}
+			: term MULOP factor {if($1 == 1 && $3==1) $$=1; else $$=-1; generateCodeIntermedi();}
 			| factor {if($1 == 1) $$=1; else $$=-1;} ;
 
 MULOP 
-			: multiplication_operator {push("*");}| division_operator {push("/");} | modulo_operator {push("%");} ;
+			: multiplication_operator {pushToStack("*");}| division_operator {pushToStack("/");} | modulo_operator {pushToStack("%");} ;
 
 factor 
 			: immutable {if($1 == 1) $$=1; else $$=-1;} 
@@ -361,8 +360,8 @@ mutable
 			              else
 			              $$ = -1;
 			              }
-			| array_identifier {if(!checkscope(curid)){printf("%s\n",curid);printf("\nErro: Variável não declarada\n");exit(0);}} '[' expression ']' 
-			                   {if(gettype(curid,0)=='i' || gettype(curid,1)== 'c')
+			| array_identifier {if(!verifyScope(curid)){printf("%s\n",curid);printf("\nErro: Variável não declarada\n");exit(0);}} '[' expression ']' 
+			                   {if(getType(curid,0)=='i' || getType(curid,1)== 'c')
 			              		$$ = 1;
 			              		else
 			              		$$ = -1;
@@ -380,7 +379,7 @@ call
 			             { printf("Erro: Função não declarada"); exit(0);} 
 			             insertSTF(curid); 
 						 strcpy(currfunccall,curid);
-						 if(gettype(curid,0)=='i' || gettype(curid,1)== 'c')
+						 if(getType(curid,0)=='i' || getType(curid,1)== 'c')
 						 {
 			             $$ = 1;
 			             }
@@ -391,13 +390,13 @@ call
 			             arguments ')' 
 						 { if(strcmp(currfunccall,"output"))
 							{ 
-								if(getSTparamscount(currfunccall)!=call_params_count)
+								if(getParamsCountFromSymbolTable(currfunccall)!=call_params_count)
 								{	
 									yyerror("Number of arguments in function call doesn't match number of parameters");
 									exit(8);
 								}
 							}
-							callgen();
+							generateFunctionCall();
 						 };
 
 arguments 
@@ -407,71 +406,52 @@ arguments_list
 			: arguments_list ',' exp { call_params_count++; }  
 			| exp { call_params_count++; };
 
-exp : identifier {arggen(1);} | integer_constant {arggen(2);} | string_constant {arggen(3);} | real_constant {arggen(4);} | character_constant {arggen(5);} ;
+exp : identifier {generateArgument(1);} | integer_constant {generateArgument(2);} | string_constant {generateArgument(3);} | real_constant {generateArgument(4);} | character_constant {generateArgument(5);} ;
 
 constant 
-			: integer_constant 	{  insV(); codegencon(); $$=1; } 
-			| string_constant	{  insV(); codegencon();$$=-1;} 
-			| real_constant	{  insV(); codegencon();} 
-			| character_constant{  insV(); codegencon();$$=1; };
+			: integer_constant 	{  insertValue(); generateConstantCode(); $$=1; } 
+			| string_constant	{  insertValue(); generateConstantCode();$$=-1;} 
+			| real_constant	{  insertValue(); generateConstantCode();} 
+			| character_constant{  insertValue(); generateConstantCode();$$=1; };
 
 %%
-
-/* Código C adicional para suporte ao analisador, incluindo funções auxiliares e a função main */
-extern FILE *yyin;
-extern int yylineno;
-extern char *yytext;
-
-/* Funções para manipulação da tabela de símbolos e tabela de constantes */
-void insertSTtype(char *,char *);
-void insertSTvalue(char *, char *);
-void incertCT(char *, char *);
-void printST();
-void printCT();
 
 /* Estrutura de dados para pilha e funções para manipulação da pilha */
 struct stack
 {
-	char value[100];
-	int labelvalue;
+    char value[100];
+    int labelvalue;
 }s[100],label[100];
 
 /* Funções para manipulação da pilha, geração de código e controle de fluxo */
 
-// Empilha uma string na pilha 's' e incrementa o topo da pilha.
-void push(char *x)
-{
-	strcpy(s[++top].value,x);
-}
-
 // Função para trocar os valores de duas variáveis.
-void swap(char *x, char *y)
+void swapCharacters(char *x, char *y)
 {
-	char temp = *x;
-	*x = *y;
-	*y = temp;
+    char temp = *x;
+    *x = *y;
+    *y = temp;
 }
 
 // Função para reverter uma string.
-void reverse(char str[], int length) 
+void reverseString(char str[], int length) 
 { 
     int start = 0; 
     int end = length -1; 
     while (start < end) 
     { 
-        swap((str+start), (str+end)); 
+        swapCharacters((str+start), (str+end)); 
         start++; 
         end--; 
     } 
 } 
 
 // Função para converter um número inteiro em uma string, de acordo com a base especificada.
-char* itoa(int num, char* str, int base) 
+char* integerToString(int num, char* str, int base) 
 { 
     int i = 0; 
     int isNegative = 0; 
   
-   
     if (num == 0) 
     { 
         str[i++] = '0'; 
@@ -485,7 +465,6 @@ char* itoa(int num, char* str, int base)
         num = -num; 
     } 
   
-   
     while (num != 0) 
     { 
         int rem = num % base; 
@@ -498,87 +477,103 @@ char* itoa(int num, char* str, int base)
   
     str[i] = '\0'; 
   
-   
-    reverse(str, i); 
+    reverseString(str, i); 
   
     return str; 
 } 
 
-// Função para gerar código intermediário para operações binárias.
-void codegen()
+// Empilha uma string na pilha 's' e incrementa o topo da pilha.
+void pushToStack(char *x)
 {
-	strcpy(temp,"t");
-	char buffer[100];
-	itoa(count,buffer,10);
-	strcat(temp,buffer);
-	printf("%s = %s %s %s\n",temp,s[top-2].value,s[top-1].value,s[top].value);
-	top = top - 2;
-	strcpy(s[top].value,temp);
-	count++; 
+    strcpy(s[++top].value,x);
 }
 
-// Função para gerar código intermediário para constantes.
-void codegencon()
+// Função para gerar código intermediário para operações binárias.
+void generateCodeIntermedi()
 {
-	strcpy(temp,"t");
-	char buffer[100];
-	itoa(count,buffer,10);
-	strcat(temp,buffer);
-	printf("%s = %s\n",temp,curval);
-	push(temp);
-	count++;
-	
+    strcpy(temp,"t");
+    char buffer[100];
+    integerToString(count,buffer,10);
+    strcat(temp,buffer);
+    printf("%s = %s %s %s\n",temp,s[top-2].value,s[top-1].value,s[top].value);
+    top = top - 2;
+    strcpy(s[top].value,temp);
+    count++; 
 }
+
+/* Funções para manipulação da tabela de símbolos e tabela de constantes */
+void insertSTtype(char *,char *);
+void insertSTvalue(char *, char *);
+void incertCT(char *, char *);
+void printST();
+void printCT();
+
+/* Código C adicional para suporte ao analisador, incluindo funções auxiliares e a função main */
+extern FILE *yyin;
+extern int yylineno;
+extern char *yytext;
 
 // Função para verificar se uma operação é unária.
 int isunary(char *s)
 {
-	if(strcmp(s, "--")==0 || strcmp(s, "++")==0)
-	{
-		return 1;
-	}
-	return 0;
+    if(strcmp(s, "--")==0 || strcmp(s, "++")==0)
+    {
+        return 1;
+    }
+    return 0;
 }
 
 // Função para gerar código intermediário para operações unárias.
-void genunary()
+void generateUnaryOperation()
 {
-	char temp1[100], temp2[100], temp3[100];
-	strcpy(temp1, s[top].value);
-	strcpy(temp2, s[top-1].value);
+    char temp1[100], temp2[100], temp3[100];
+    strcpy(temp1, s[top].value);
+    strcpy(temp2, s[top-1].value);
 
-	if(isunary(temp1))
-	{
-		strcpy(temp3, temp1);
-		strcpy(temp1, temp2);
-		strcpy(temp2, temp3);
-	}
-	strcpy(temp, "t");
-	char buffer[100];
-	itoa(count, buffer, 10);
-	strcat(temp, buffer);
-	count++;
+    if(isunary(temp1))
+    {
+        strcpy(temp3, temp1);
+        strcpy(temp1, temp2);
+        strcpy(temp2, temp3);
+    }
+    strcpy(temp, "t");
+    char buffer[100];
+    integerToString(count, buffer, 10);
+    strcat(temp, buffer);
+    count++;
 
-	if(strcmp(temp2,"--")==0)
-	{
-		printf("%s = %s - 1\n", temp, temp1);
-		printf("%s = %s\n", temp1, temp);
-	}
+    if(strcmp(temp2,"--")==0)
+    {
+        printf("%s = %s - 1\n", temp, temp1);
+        printf("%s = %s\n", temp1, temp);
+    }
 
-	if(strcmp(temp2,"++")==0)
-	{
-		printf("%s = %s + 1\n", temp, temp1);
-		printf("%s = %s\n", temp1, temp);
-	}
+    if(strcmp(temp2,"++")==0)
+    {
+        printf("%s = %s + 1\n", temp, temp1);
+        printf("%s = %s\n", temp1, temp);
+    }
 
-	top = top -2;
+    top = top -2;
 }
 
 // Função para gerar código intermediário para atribuições.
-void codeassign()
+void generateAssignmentCode()
 {
-	printf("%s = %s\n",s[top-2].value,s[top].value);
-	top = top - 2;
+    printf("%s = %s\n",s[top-2].value,s[top].value);
+    top = top - 2;
+}
+
+// Função para gerar código intermediário para constantes.
+void generateConstantCode()
+{
+    strcpy(temp,"t");
+    char buffer[100];
+    integerToString(count,buffer,10);
+    strcat(temp,buffer);
+    printf("%s = %s\n",temp,curval);
+    pushToStack(temp);
+    count++;
 }
 
 // Função para gerar rótulos e código intermediário para estruturas de controle (IF).
@@ -586,7 +581,7 @@ void label1()
 {
 	strcpy(temp,"L");
 	char buffer[100];
-	itoa(lno,buffer,10);
+	integerToString(lno,buffer,10);
 	strcat(temp,buffer);
 	printf("IF not %s GoTo %s\n",s[top].value,temp);
 	label[++ltop].labelvalue = lno++;
@@ -597,11 +592,11 @@ void label2()
 {
 	strcpy(temp,"L");
 	char buffer[100];
-	itoa(lno,buffer,10);
+	integerToString(lno,buffer,10);
 	strcat(temp,buffer);
 	printf("GoTo %s\n",temp);
 	strcpy(temp,"L");
-	itoa(label[ltop].labelvalue,buffer,10);
+	integerToString(label[ltop].labelvalue,buffer,10);
 	strcat(temp,buffer);
 	printf("%s:\n",temp);
 	ltop--;
@@ -613,7 +608,7 @@ void label3()
 {
 	strcpy(temp,"L");
 	char buffer[100];
-	itoa(label[ltop].labelvalue,buffer,10);
+	integerToString(label[ltop].labelvalue,buffer,10);
 	strcat(temp,buffer);
 	printf("%s:\n",temp);
 	ltop--;
@@ -625,7 +620,7 @@ void label4()
 {
 	strcpy(temp,"L");
 	char buffer[100];
-	itoa(lno,buffer,10);
+	integerToString(lno,buffer,10);
 	strcat(temp,buffer);
 	printf("%s:\n",temp);
 	label[++ltop].labelvalue = lno++;
@@ -636,11 +631,11 @@ void label5()
 {
 	strcpy(temp,"L");
 	char buffer[100];
-	itoa(label[ltop-1].labelvalue,buffer,10);
+	integerToString(label[ltop-1].labelvalue,buffer,10);
 	strcat(temp,buffer);
 	printf("GoTo %s:\n",temp);
 	strcpy(temp,"L");
-	itoa(label[ltop].labelvalue,buffer,10);
+	integerToString(label[ltop].labelvalue,buffer,10);
 	strcat(temp,buffer);
 	printf("%s:\n",temp);
 	ltop = ltop - 2;
@@ -648,60 +643,22 @@ void label5()
    
 }
 
-// Função para iniciar a geração de código de uma função.
-void funcgen()
+// Função chamada no final da análise sintática.
+int yywrap()
 {
-	printf("func begin %s\n",currfunc);
+    return 1;
 }
 
-// Função para finalizar a geração de código de uma função.
-void funcgenend()
+// Função para inserir o valor de um identificador na tabela de símbolos.
+void insertValue()
 {
-	printf("func end\n\n");
+    insertSTvalue(curid,curval); 
 }
 
-void arggen(int i)
+// Função para inserir o tipo de um identificador na tabela de símbolos.
+void insertSymbol()
 {
-    if(i==1)
-    {
-	printf("refparam %s\n", curid);
-	}
-	else
-	{
-	printf("refparam %s\n", curval);
-	}
-}
-
-// Função para gerar código intermediário para argumentos de funções.
-void callgen()
-{
-	printf("refparam result\n");
-	push("result");
-	printf("call %s, %d\n",currfunccall,call_params_count);
-}
-
-
-
-// Inicia a análise sintática do arquivo de entrada e imprime as tabelas de símbolos e constantes.
-int main(int argc , char **argv)
-{
-    yyin = fopen(argv[1], "r"); // Abre o arquivo de entrada para leitura.
-	printf("\n%30s" ANSI_COLOR_CYAN "CÓDIGO INTERMEDIÁRIO" ANSI_COLOR_RESET "\n", " ");
-	printf("%29s %s\n", " ", "--------------------");
-    yyparse(); // Inicia a análise sintática.
-
-    // Se a análise foi bem-sucedida, imprime as tabelas de símbolos e constantes.
-    if(flag == 0)
-    {
-        printf(ANSI_COLOR_GREEN "Status: Parsing Completo - Válido" ANSI_COLOR_RESET "\n\n");
-        printf("%30s" ANSI_COLOR_CYAN "TABELA DE SÍMBOLOS" ANSI_COLOR_RESET "\n", " ");
-		printf("%29s %s\n", " ", "------------------");
-        printST(); // Imprime a tabela de símbolos.
-
-        printf("\n\n%30s" ANSI_COLOR_CYAN "TABELA DE CONSTANTES" ANSI_COLOR_RESET "\n", " ");
-        printf("%29s %s\n", " ", "---------------------");
-        printCT(); // Imprime a tabela de constantes.
-    }
+    insertSTtype(curid,curtype);
 }
 
 // Função chamada quando um erro de análise é encontrado.
@@ -713,20 +670,56 @@ void yyerror(char *s)
     exit(7); // Encerra o programa com código de erro.
 }
 
-// Função para inserir o tipo de um identificador na tabela de símbolos.
-void ins()
+// Inicia a análise sintática do arquivo de entrada e imprime as tabelas de símbolos e constantes.
+int main(int argc , char **argv)
 {
-    insertSTtype(curid,curtype);
+    yyin = fopen(argv[1], "r"); // Abre o arquivo de entrada para leitura.
+    printf("\n%30s" ANSI_COLOR_CYAN "CÓDIGO INTERMEDIÁRIO" ANSI_COLOR_RESET "\n", " ");
+    printf("%29s %s\n", " ", "--------------------");
+    yyparse(); // Inicia a análise sintática.
+
+    // Se a análise foi bem-sucedida, imprime as tabelas de símbolos e constantes.
+    if(flag == 0)
+    {
+        printf(ANSI_COLOR_GREEN "Status: Parsing Completo - Válido" ANSI_COLOR_RESET "\n\n");
+        printf("%30s" ANSI_COLOR_CYAN "TABELA DE SÍMBOLOS" ANSI_COLOR_RESET "\n", " ");
+        printf("%29s %s\n", " ", "------------------");
+        printST(); // Imprime a tabela de símbolos.
+
+        printf("\n\n%30s" ANSI_COLOR_CYAN "TABELA DE CONSTANTES" ANSI_COLOR_RESET "\n", " ");
+        printf("%29s %s\n", " ", "---------------------");
+        printCT(); // Imprime a tabela de constantes.
+    }
 }
 
-// Função para inserir o valor de um identificador na tabela de símbolos.
-void insV()
+// Função para gerar código intermediário para argumentos de funções.
+void generateFunctionCall()
 {
-    insertSTvalue(curid,curval); 
+    printf("refparam result\n");
+    pushToStack("result");
+    printf("call %s, %d\n",currfunccall,call_params_count);
 }
 
-// Função chamada no final da análise sintática.
-int yywrap()
+void generateArgument(int i)
 {
-    return 1;
+    if(i==1)
+    {
+        printf("refparam %s\n", curid);
+    }
+    else
+    {
+        printf("refparam %s\n", curval);
+    }
+}
+
+// Função para finalizar a geração de código de uma função.
+void endFunctionGeneration()
+{
+    printf("func end\n\n");
+}
+
+// Função para iniciar a geração de código de uma função.
+void startFunctionGeneration()
+{
+    printf("func begin %s\n",currfunc);
 }

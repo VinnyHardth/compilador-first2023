@@ -116,7 +116,7 @@
 	// Insere um novo símbolo na tabela de símbolos (ST) com o nome 'str1' e a classe 'str2'.
 	// Se o símbolo já existir como um identificador e for tentado inserir como um identificador de array, um erro é exibido.
 	// Se o símbolo não existir, ele é inserido na tabela.
-	void insertST(char *str1, char *str2)
+	void addToSymbolTable(char *str1, char *str2)
 	{
 		if(lookupST(str1))
 		{
@@ -189,7 +189,7 @@
 	// Insere ou atualiza o nível de aninhamento de um símbolo na tabela de símbolos (ST).
 	// Se o símbolo já existir com um nível de aninhamento diferente de 9999, ele é inserido novamente com o novo nível de aninhamento 'nest'.
 	// Caso contrário, o nível de aninhamento do símbolo existente é atualizado.
-	void insertSTnest(char *s, int nest)
+	void addToSymbolTableWithNest(char *s, int nest)
 	{
 		if(lookupST(s) && ST[lookupST(s)].nestval != 9999)
 		{
@@ -225,7 +225,7 @@
 
 	// Atualiza a contagem de parâmetros de um símbolo na tabela de símbolos (ST).
 	// A função busca o símbolo 's' na tabela e atualiza sua contagem de parâmetros para 'count1'.
-	void insertSTparamscount(char *s, int count1)
+	void addParamsCountToSymbolTable(char *s, int count1)
 	{
 
 		for(int i = 0 ; i < 1001 ; i++)
@@ -240,7 +240,7 @@
 	// Retorna a contagem de parâmetros de um símbolo na tabela de símbolos (ST).
 	// A função busca o símbolo 's' na tabela e retorna sua contagem de parâmetros.
 	// Se o símbolo não for encontrado, retorna -1.
-	int getSTparamscount(char *s)
+	int getParamsCountFromSymbolTable(char *s)
 	{
 		for(int i = 0 ; i < 1001 ; i++)
 		{
@@ -254,7 +254,7 @@
 
 	// Atualiza a classe de um símbolo na tabela de símbolos (ST) para "Function".
 	// A função busca o símbolo 's' na tabela e, se encontrado, atualiza sua classe para "Function".
-	void insertSTF(char *s)
+	void addToFunctionSymbolTable(char *s)
 	{
 		for(int i = 0 ; i < 1001 ; i++)
 		{
@@ -304,7 +304,7 @@
 
 	// Marca todos os símbolos na tabela de símbolos (ST) com um determinado nível de aninhamento 'nesting' como deletados, 
 	// atualizando seu nível de aninhamento para um valor alto (99999).
-	void deletedata (int nesting)
+	void deleteSymbolData (int nesting)
 	{
 		for(int i = 0 ; i < 1001 ; i++)
 		{
@@ -319,7 +319,7 @@
 
 	// Verifica se um símbolo 's' está no escopo atual ou em um escopo mais interno.
 	// Retorna 1 se o símbolo estiver no escopo atual ou em um escopo mais externo, e 0 se estiver em um escopo mais interno.
-	int checkscope(char *s)
+	int verifyScope(char *s)
 	{
 		int flag = 0;
 		for(int i = 0 ; i < 1000 ; i++)
@@ -349,7 +349,7 @@
 
 	// Verifica se um identificador 's' na tabela de símbolos (ST) é uma função.
 	// Retorna 1 se for uma função, e 0 caso contrário.
-	int check_id_is_func(char *s)
+	int isIdentifierFunction(char *s)
 	{
 		for(int i = 0 ; i < 1000 ; i++)
 		{
@@ -364,7 +364,7 @@
 
 	// Verifica se um identificador 's' na tabela de símbolos (ST) é um identificador de array.
 	// Retorna 0 se for um identificador de array, e 1 caso contrário.
-	int checkarray(char *s)
+	int isArray(char *s)
 	{
 		for(int i = 0 ; i < 1000 ; i++)
 		{
@@ -381,7 +381,7 @@
 
 	// Verifica se um símbolo 's' já existe na tabela de símbolos (ST) no escopo atual (currnest).
 	// Retorna 1 se um duplicado for encontrado no mesmo escopo, e 0 caso contrário.
-	int duplicate(char *s)
+	int isDuplicate(char *s)
 	{
 		for(int i = 0 ; i < 1000 ; i++)
 		{
@@ -399,7 +399,7 @@
 
 	// Verifica se uma função com o nome 'str' já foi declarada na tabela de símbolos (ST).
 	// Se uma duplicata for encontrada, exibe uma mensagem de erro e encerra o programa.
-	int check_duplicate(char* str)
+	int verifyDuplicate(char* str)
 	{
 		for(int i=0; i<1001; i++)
 		{
@@ -413,7 +413,7 @@
 
 	// Verifica se um símbolo 'str' foi declarado como uma função na tabela de símbolos (ST) ou se é igual a "output".
 	// Retorna 1 se a condição for verdadeira, e 0 caso contrário.
-	int check_declaration(char* str, char *check_type)
+	int verifyDeclaration(char* str, char *check_type)
 	{
 		for(int i=0; i<1001; i++)
 		{
@@ -427,7 +427,7 @@
 
 	// Verifica se o especificador de tipo 'type_specifier' é "void".
 	// Se for, exibe uma mensagem de erro e encerra o programa, indicando que parâmetros não podem ser do tipo void.
-	int check_params(char* type_specifier)
+	int verifyParameters(char* type_specifier)
 	{
 		if(!strcmp(type_specifier, "void"))
 		{
@@ -439,7 +439,7 @@
 
 	// Retorna o primeiro caractere do tipo do símbolo 's' na tabela de símbolos (ST).
 	// Se o símbolo não for encontrado, o comportamento é indefinido.
-	char gettype(char *s, int flag)
+	char getType(char *s, int flag)
 	{
 			for(int i = 0 ; i < 1001 ; i++ )
 			{
@@ -493,13 +493,8 @@
 
 %}
 
-DE "define"
-IN "include"
-
 %%
 \n 	{yylineno++;}
-([#][" "]*({IN})[ ]*([<]?)([A-Za-z]+)[.]?([A-Za-z]*)([>]?))/["\n"|\/|" "|"\t"]	{ }
-([#][" "]*({DE})[" "]*([A-Za-z]+)(" ")*[0-9]+)/["\n"|\/|" "|"\t"]				{ } 
 \/\/(.*)																		{ }
 \/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+\/										{ }
 [ \n\t] ;
@@ -514,24 +509,24 @@ IN "include"
 ":"				{ return(':'); }
 "."				{ return('.'); }
 
-"char"			{ strcpy(curtype,yytext); insertST(yytext, "Keyword");return CHAR;}
-"double"		{ strcpy(curtype,yytext); insertST(yytext, "Keyword"); return DOUBLE;}
-"else"			{ insertST(yytext, "Keyword"); return ELSE;}
-"real"			{ strcpy(curtype,yytext); insertST(yytext, "Keyword"); return REAL;}
-"while"			{ insertST(yytext, "Keyword"); return WHILE;}
-"do"			{ insertST(yytext, "Keyword"); return DO;}
-"for"			{ insertST(yytext, "Keyword"); return FOR;}
-"if"			{ insertST(yytext, "Keyword"); return IF;}
-"int"			{ strcpy(curtype,yytext); insertST(yytext, "Keyword"); return INT;}
-"long"			{ strcpy(curtype,yytext); insertST(yytext, "Keyword"); return LONG;}
-"return"		{ insertST(yytext, "Keyword"); return RETURN;}
-"short"			{ strcpy(curtype,yytext); insertST(yytext, "Keyword"); return SHORT;}
-"signed"		{ strcpy(curtype,yytext); insertST(yytext, "Keyword"); return SIGNED;}
-"sizeof" 		{ insertST(yytext, "Keyword"); return SIZEOF;}
-"struct"		{ strcpy(curtype,yytext);   insertST(yytext, "Keyword");  return STRUCT;}
-"unsigned"		{ insertST(yytext, "Keyword");   return UNSIGNED;}
-"void"			{ strcpy(curtype,yytext);   insertST(yytext, "Keyword");  return VOID;}
-"break"			{ insertST(yytext, "Keyword");  return BREAK;}
+"char"			{ strcpy(curtype,yytext); addToSymbolTable(yytext, "Keyword");return CHAR;}
+"double"		{ strcpy(curtype,yytext); addToSymbolTable(yytext, "Keyword"); return DOUBLE;}
+"else"			{ addToSymbolTable(yytext, "Keyword"); return ELSE;}
+"real"			{ strcpy(curtype,yytext); addToSymbolTable(yytext, "Keyword"); return REAL;}
+"while"			{ addToSymbolTable(yytext, "Keyword"); return WHILE;}
+"do"			{ addToSymbolTable(yytext, "Keyword"); return DO;}
+"for"			{ addToSymbolTable(yytext, "Keyword"); return FOR;}
+"if"			{ addToSymbolTable(yytext, "Keyword"); return IF;}
+"int"			{ strcpy(curtype,yytext); addToSymbolTable(yytext, "Keyword"); return INT;}
+"long"			{ strcpy(curtype,yytext); addToSymbolTable(yytext, "Keyword"); return LONG;}
+"return"		{ addToSymbolTable(yytext, "Keyword"); return RETURN;}
+"short"			{ strcpy(curtype,yytext); addToSymbolTable(yytext, "Keyword"); return SHORT;}
+"signed"		{ strcpy(curtype,yytext); addToSymbolTable(yytext, "Keyword"); return SIGNED;}
+"sizeof" 		{ addToSymbolTable(yytext, "Keyword"); return SIZEOF;}
+"struct"		{ strcpy(curtype,yytext);   addToSymbolTable(yytext, "Keyword");  return STRUCT;}
+"unsigned"		{ addToSymbolTable(yytext, "Keyword");   return UNSIGNED;}
+"void"			{ strcpy(curtype,yytext);   addToSymbolTable(yytext, "Keyword");  return VOID;}
+"break"			{ addToSymbolTable(yytext, "Keyword");  return BREAK;}
 
 
 
@@ -571,10 +566,10 @@ IN "include"
 
 \"[^\n]*\"/[;|,|\)] 			{strcpy(curval,yytext); insertCT(yytext,"String Constant"); return string_constant;}
 \'[A-Z|a-z]\'/[;|,|\)|:] 		{strcpy(curval,yytext); insertCT(yytext,"Character Constant"); return character_constant;}
-[a-z|A-Z]([a-z|A-Z]|[0-9])*/\[ 	{strcpy(curid,yytext); insertST(yytext, "Array Identifier");  return array_identifier;}
+[a-z|A-Z]([a-z|A-Z]|[0-9])*/\[ 	{strcpy(curid,yytext); addToSymbolTable(yytext, "Array Identifier");  return array_identifier;}
 [1-9][0-9]*|0/[;|,|" "|\)|<|>|=|\!|\||&|\+|\-|\*|\/|\%|~|\]|\}|:|\n|\t|\^] 	{strcpy(curval,yytext); insertCT(yytext, "Number Constant"); yylval = atoi(yytext); return integer_constant;}
-([0-9]*)\.([0-9]+)/[;|,|" "|\)|<|>|=|\!|\||&|\+|\-|\*|\/|\%|~|\n|\t|\^] 	{strcpy(curval,yytext); insertCT(yytext, "Real Constant"); return real_constant;}
-[A-Za-z_][A-Za-z_0-9]* {strcpy(curid,yytext); insertST(curid,"Identifier"); return identifier;}
+([0-9]*)\.([0-9]+)/[;|,|" "|\)|<|>|=|\!|\||&|\+|\-|\*|\/|\%|~|\n|\t|\^] 	{strcpy(curval,yytext); insertCT(yytext, "real Constant"); return real_constant;}
+[A-Za-z_][A-Za-z_0-9]* {strcpy(curid,yytext); addToSymbolTable(curid,"Identifier"); return identifier;}
 
 (.?) {
 	if(yytext[0]=='"')
