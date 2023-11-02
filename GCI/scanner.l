@@ -454,7 +454,7 @@
 	// Imprime a tabela de símbolos (ST) formatada, mostrando símbolo, classe, tipo, valor, número da linha, nível de aninhamento e contagem de parâmetros.
 	 void printST()
     {
-        printf("%10s | %15s | %10s | %10s | %10s |\n","SYMBOL", "CLASS", "TYPE","VALUE", "LINE NO");
+        printf("%11s | %15s | %10s | %10s | %10s |\n","SÍMBOLO", "CLASSE", "TIPO","VALOR", "NUM LINHA");
         for(int i=0;i<81;i++) {
             printf("-");
         }
@@ -472,7 +472,7 @@
 	// Imprime a tabela de constantes (CT) formatada, mostrando nome e tipo.
 	void printCT()
 	{
-		printf("%10s | %15s\n","NAME", "TYPE");
+		printf("%10s | %15s\n","NOME", "TIPO");
 		for(int i=0;i<81;i++) {
 			printf("-");
 		}

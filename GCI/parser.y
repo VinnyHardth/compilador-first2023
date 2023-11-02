@@ -353,7 +353,7 @@ mutable
 						  if(check_id_is_func(curid))
 						  {printf("Function name used as Identifier\n"); exit(8);}
 			              if(!checkscope(curid))
-			              {printf("%s\n",curid);printf("Variável não declarada\n");exit(0);} 
+			              {printf("%s\n",curid);printf("\nErro: Variável não declarada\n");exit(0);} 
 			              if(!checkarray(curid))
 			              {printf("%s\n",curid);printf("Array ID has no subscript\n");exit(0);}
 			              if(gettype(curid,0)=='i' || gettype(curid,1)== 'c')
@@ -361,7 +361,7 @@ mutable
 			              else
 			              $$ = -1;
 			              }
-			| array_identifier {if(!checkscope(curid)){printf("%s\n",curid);printf("Variável não declarada\n");exit(0);}} '[' expression ']' 
+			| array_identifier {if(!checkscope(curid)){printf("%s\n",curid);printf("\nErro: Variável não declarada\n");exit(0);}} '[' expression ']' 
 			                   {if(gettype(curid,0)=='i' || gettype(curid,1)== 'c')
 			              		$$ = 1;
 			              		else
@@ -686,18 +686,20 @@ void callgen()
 int main(int argc , char **argv)
 {
     yyin = fopen(argv[1], "r"); // Abre o arquivo de entrada para leitura.
+	printf("\n%30s" ANSI_COLOR_CYAN "CÓDIGO INTERMEDIÁRIO" ANSI_COLOR_RESET "\n", " ");
+	printf("%29s %s\n", " ", "--------------------");
     yyparse(); // Inicia a análise sintática.
 
     // Se a análise foi bem-sucedida, imprime as tabelas de símbolos e constantes.
     if(flag == 0)
     {
-        printf(ANSI_COLOR_GREEN "Status: Parsing Complete - Valid" ANSI_COLOR_RESET "\n");
-        printf("%30s" ANSI_COLOR_CYAN "SYMBOL TABLE" ANSI_COLOR_RESET "\n", " ");
-        printf("%30s %s\n", " ", "------------");
+        printf(ANSI_COLOR_GREEN "Status: Parsing Completo - Válido" ANSI_COLOR_RESET "\n\n");
+        printf("%30s" ANSI_COLOR_CYAN "TABELA DE SÍMBOLOS" ANSI_COLOR_RESET "\n", " ");
+		printf("%29s %s\n", " ", "------------------");
         printST(); // Imprime a tabela de símbolos.
 
-        printf("\n\n%30s" ANSI_COLOR_CYAN "CONSTANT TABLE" ANSI_COLOR_RESET "\n", " ");
-        printf("%30s %s\n", " ", "--------------");
+        printf("\n\n%30s" ANSI_COLOR_CYAN "TABELA DE CONSTANTES" ANSI_COLOR_RESET "\n", " ");
+        printf("%29s %s\n", " ", "---------------------");
         printCT(); // Imprime a tabela de constantes.
     }
 }
@@ -707,7 +709,7 @@ void yyerror(char *s)
 {
     printf(ANSI_COLOR_RED "%d %s %s\n", yylineno, s, yytext); // Imprime a mensagem de erro.
     flag = 1; // Seta a flag de erro.
-    printf(ANSI_COLOR_RED "Status: Parsing Failed - Invalid\n" ANSI_COLOR_RESET);
+    printf(ANSI_COLOR_RED "Status: Parsing Falhou - Inválido\n" ANSI_COLOR_RESET);
     exit(7); // Encerra o programa com código de erro.
 }
 
